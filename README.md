@@ -1,50 +1,78 @@
 # SkillSync.ai
 
-SkillSync.ai is a platform where you can find curated projects that you could build with the tech stack you know. It's a project finder that helps developers discover and work on projects that match their skills and interests.
+> Find curated project ideas based on your tech stack, powered by AI.
+
+## Features
+
+- AI-powered project suggestions using Google Gemini
+- Select from predefined tech stacks or add custom ones
+- Get difficulty levels, estimated time, resources, and learning outcomes
+- Clean, responsive UI with Tailwind CSS
+
+## Tech Stack
+
+**Frontend:** React, Vite, Tailwind CSS  
+**Backend:** Node.js, Express, Google Gemini AI
+
+## Setup
+
+1. **Clone and install dependencies:**
+```bash
+git clone <repo-url>
+cd backend && npm install
+cd ../frontend && npm install
+```
+
+2. **Create `.env` in root directory:**
+```env
+GEMINI_API_KEY=your_api_key_here
+PORT=3000
+```
+
+3. **Create `frontend/.env`:**
+```env
+VITE_API_URL=http://localhost:3000
+```
+
+4. **Run the app:**
+```bash
+# Terminal 1 - Backend
+cd backend && npm run dev
+
+# Terminal 2 - Frontend  
+cd frontend && npm run dev
+```
+
+Visit `http://localhost:3001`
 
 ## Project Structure
 
 ```
-backend/
-  config.js
-  index.js
-  package.json
-  utils/
-	 api.js
-README.md
+├── backend/
+│   ├── config.js          # Configuration
+│   ├── index.js           # Express server
+│   └── utils/api.js       # Gemini AI integration
+├── frontend/
+│   └── src/
+│       ├── App.jsx        # Main component
+│       └── index.css      # Styles
+└── README.md
 ```
 
-## Backend
+## Known Issues & Improvements
 
-The backend is a Node.js application. It includes:
+**Needs fixing:**
+- Error handling and validation
+- Rate limiting on API calls
+- Input sanitization
+- Loading states
 
-- `config.js`: Configuration settings for the backend.
-- `index.js`: Entry point for the backend server.
-- `utils/api.js`: Utility functions for API operations.
-
-## Getting Started
-
-1. Navigate to the backend directory:
-	```sh
-	cd backend
-	```
-
-2. Install dependencies:
-	```sh
-	npm install
-	```
-
-3. Start the backend server:
-	```sh
-	node index.js
-	```
-
-## Requirements
-
-- Node.js (v14 or higher recommended)
-- npm
+**Future ideas:**
+- Save/bookmark projects
+- Project filtering
+- Dark/light mode toggle
+- TypeScript migration
 
 ## License
 
-This project is licensed under the MIT License.
-
+MIT License - feel free to use this for learning and personal projects.
