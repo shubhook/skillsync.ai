@@ -9,7 +9,7 @@ const port = process.env.PORT || 3000;
 
 const allowedOrigins = [
   'http://localhost:3001',
-  process.env.FRONTEND_URL || 'https://skillsync-frontend-five.vercel.app/'
+  process.env.FRONTEND_URL || 'https://skillsync-frontend-five.vercel.app'
 ];
 
 app.use(cors({
