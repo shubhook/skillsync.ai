@@ -1,0 +1,1 @@
+This Project uses React as the frontend framework
