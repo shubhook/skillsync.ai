@@ -59,8 +59,11 @@ function App() {
       others: selected.others.join(',')
     };
 
+    // Use environment variable for API URL in production
+    const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+
     try {
-      const response = await axios.post('http://localhost:3000/ai', { dataset });
+      const response = await axios.post(`${API_URL}/ai`, { dataset });
       setProjects(response.data.response.projects || []);
     } catch (err) {
       setError('Failed to fetch project suggestions. Make sure backend is running.');
