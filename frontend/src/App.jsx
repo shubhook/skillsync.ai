@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import axios from 'axios';
-import NavBar from './NavBar.jsx';
-import Footer from './Footer.jsx';
+import NavBar from './components/Navbar.jsx';
+import Footer from './components/Footer.jsx';
 
 function App() {
   const [selected, setSelected] = useState({

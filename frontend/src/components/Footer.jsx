@@ -21,7 +21,7 @@ function Footer() {
           Twitter
         </a>
       </p>
-      <p className="text-gray-500">Build with ❤️</p>
+      <p className=" text-gray-500">Build with ❤️</p>
     </footer>
   );
 }
