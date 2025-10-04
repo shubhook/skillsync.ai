@@ -1,5 +1,7 @@
 import { useState } from 'react';
 import axios from 'axios';
+import NavBar from './components/Navbar.jsx';
+import Footer from './components/Footer.jsx';
 
 function App() {
   const [selected, setSelected] = useState({
@@ -184,10 +186,11 @@ function App() {
 
   return (
     <div className="min-h-screen bg-black text-white p-8">
+      <NavBar/>
       <div className="max-w-7xl mx-auto">
         <header className="mb-12 text-center">
-          <h1 className="text-5xl font-bold mb-2">SkillSync.ai</h1>
-          <p className="text-gray-400">Find curated projects tailored to your tech stack</p>
+          {/* <h1 className="text-5xl font-bold mb-2" style={{fontFamily: "sans-serif"}}>SkillSync</h1> */}
+          <p className="text-gray-400" style={{fontFamily: "inherit"}}>Find curated projects tailored to your tech stack</p>
         </header>
 
         <div className="mb-12">
@@ -224,6 +227,7 @@ function App() {
           </div>
         )}
       </div>
+      <Footer/>
     </div>
   );
 }

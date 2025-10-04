@@ -72,6 +72,8 @@ Visit `http://localhost:3001`
 - Project filtering
 - Dark/light mode toggle
 - TypeScript migration
+- Export to PDF/Markdown
+- Community Projects Database
 
 ## License
 
