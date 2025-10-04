@@ -2,6 +2,7 @@ import { useState } from 'react';
 import axios from 'axios';
 import NavBar from './components/Navbar.jsx';
 import Footer from './components/Footer.jsx';
+import Logo from "./assets/logo.png";
 
 function App() {
   const [selected, setSelected] = useState({
@@ -186,7 +187,34 @@ function App() {
 
   return (
     <div className="min-h-screen bg-black text-white p-8">
-      <NavBar/>
+      <nav className="fixed top-4 left-1/2 transform -translate-x-1/2 
+                        w-[90%] max-w-6xl z-50 
+                        backdrop-blur-xl bg-gray-900/70 border border-gray-700 
+                        rounded-2xl shadow-xl transition-all duration-300 
+                        hover:shadow-2xl hover:-translate-y-0.5">
+          <div className="flex justify-between items-center px-6 py-3">
+            {/* Logo only */}
+            <img
+              src={Logo}
+              alt="SkillSync Logo"
+              className="h-10 w-auto object-contain scale-125"
+              style={{ minHeight: '2.5rem', borderRadius: '1vh' }}
+            />
+    
+    
+            {/* Right-side link */}
+            <a
+              href="https://github.com/shubhook/skillsync.ai"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="px-3 py-1 rounded-lg bg-indigo-500 text-white 
+                        hover:bg-indigo-600 transition-all text-sm font-medium"
+              style={{padding: "10px"}}
+            >
+              GitHub
+            </a>
+          </div>
+        </nav>
       <div className="max-w-7xl mx-auto">
         <header className="mb-12 text-center">
           {/* <h1 className="text-5xl font-bold mb-2" style={{fontFamily: "sans-serif"}}>SkillSync</h1> */}
@@ -227,7 +255,28 @@ function App() {
           </div>
         )}
       </div>
-      <Footer/>
+      <footer className="mt-16 border-t border-gray-800 py-6 text-center text-gray-400 text-sm">
+        <p className="mb-3">
+          <a
+            href="https://github.com/shubhook/skillsync.ai"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="hover:text-white transition-all mx-2"
+          >
+            GitHub
+          </a>
+          |
+          <a
+            href="https://x.com/ShubhamKhakha"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="hover:text-white transition-all mx-2"
+          >
+            Twitter
+          </a>
+        </p>
+        <p className=" text-gray-500">Build with ❤️</p>
+      </footer>
     </div>
   );
 }
