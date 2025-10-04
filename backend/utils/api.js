@@ -7,20 +7,55 @@ const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
 
 // gemini api call
 async function apiCall(dataset) {
-  const result = await model.generateContent(
-   `Generate project suggestions tailored to the user-provided dataset ${JSON.stringify(dataset)}, including required resources for each project, along with link of youtube videos & official documentation if available for how to use the resources. Also provide an esitimated time to build the project. Return only raw JSON, no code blocks or explanations.`
-  );
+  const prompt = `You are a project suggestion API. Generate exactly 3 project suggestions based on this dataset: ${JSON.stringify(dataset)}
+
+Return ONLY valid JSON matching this exact structure (no markdown, no code blocks, no explanations):
+
+{
+  "projects": [
+    {
+      "title": "string",
+      "description": "string (2-3 sentences)",
+      "difficulty": "Beginner|Intermediate|Advanced",
+      "estimatedTime": "string (e.g., '2-3 weeks', '1 month')",
+      "techStack": ["string"],
+      "resources": [
+        {
+          "name": "string",
+          "type": "Documentation|Video|Tutorial",
+          "url": "string (valid URL or 'Not available')"
+        }
+      ],
+      "learningOutcomes": ["string"]
+    }
+  ]
+}
+
+Rules:
+- Generate exactly 3 projects
+- Each project must have 2-4 resources
+- Each project must have 3-5 learning outcomes
+- All URLs must be real and valid, or use "Not available"
+- estimatedTime must follow format: "X weeks" or "X months"
+- techStack array must contain technologies from the user's dataset
+- difficulty must be one of: Beginner, Intermediate, Advanced`;
+  const result = await model.generateContent(prompt);
   const text = await result.response.text();
   // console.log(result);
   const cleanText = text.replace(/```json|```/g, '').trim();
 
   try {
     const json = JSON.parse(cleanText);
-    // console.log(json);
+
+    if (!json.projects || !Array.isArray(json.projects)) {
+      throw new Error("Invalid response structure");
+    }
+
     return json;
   } catch (error) {
     console.error("Failed to parse JSON");
     console.error("Raw response from model:\n", text);
+    throw error;
   }
 }
 
