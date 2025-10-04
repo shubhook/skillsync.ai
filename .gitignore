@@ -1,3 +1,4 @@
 .env
 node_modules/
+backend/diagnostic.js
 .DS_Store
