@@ -2,7 +2,12 @@ const{ GoogleGenerativeAI } = require("@google/generative-ai");
 
 // import all resources
 const { GEMINI_API_KEY } = require('../config');
-// console.log("GemAPiKey"+GEMINI_API_KEY);
+
+if (!GEMINI_API_KEY) {
+  console.error('❌ GEMINI_API_KEY is not set in .env file!');
+  process.exit(1);
+}
+
 const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
 const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
 
