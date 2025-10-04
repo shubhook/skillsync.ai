@@ -4,7 +4,7 @@ const{ GoogleGenerativeAI } = require("@google/generative-ai");
 const { GEMINI_API_KEY } = require('../config');
 
 if (!GEMINI_API_KEY) {
-  console.error('❌ GEMINI_API_KEY is not set in .env file!');
+  console.error('GEMINI_API_KEY is not set in .env file!');
   process.exit(1);
 }
 
