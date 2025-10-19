@@ -17,6 +17,8 @@ function App() {
     others: ''
   });
 
+  const [openSection, setOpenSection] = useState('languages'); // Default open section
+
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -48,6 +50,10 @@ function App() {
     }
   };
 
+  const toggleSection = (section) => {
+    setOpenSection(openSection === section ? '' : section);
+  };
+
   const handleSubmit = async () => {
     setLoading(true);
     setError('');
@@ -60,7 +66,6 @@ function App() {
       others: selected.others.join(',')
     };
 
-    // Use environment variable for API URL in production
     const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
 
     try {
@@ -74,45 +79,79 @@ function App() {
     }
   };
 
-  const Section = ({ title, category, items }) => (
-    <div className="mb-8">
-      <h2 className="text-xl font-bold mb-4 text-gray-100">{title}</h2>
-      <div className="flex flex-wrap gap-2 mb-3">
-        {items.map(item => (
-          <button
-            key={item}
-            onClick={() => toggleSelection(category, item)}
-            className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-              selected[category].includes(item)
-                ? 'bg-white text-black'
-                : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
-            }`}
-          >
-            {item}
-          </button>
-        ))}
-      </div>
-      <div className="flex gap-2">
-        <input
-          type="text"
-          value={customInputs[category]}
-          onChange={(e) => setCustomInputs(prev => ({ ...prev, [category]: e.target.value }))}
-          onKeyPress={(e) => e.key === 'Enter' && addCustom(category)}
-          placeholder="Add custom..."
-          className="flex-1 px-4 py-2 bg-gray-900 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-white"
-        />
+  const Section = ({ title, category, items, isOpen }) => (
+    <div className={`border-r border-gray-800 last:border-r-0 ${isOpen ? '' : ''}`}>
+      <div className="bg-gray-900/50 h-full">
+        {/* Section Header */}
         <button
-          onClick={() => addCustom(category)}
-          className="px-6 py-2 bg-gray-800 text-white rounded-lg hover:bg-gray-700 transition-all"
+          onClick={() => toggleSection(category)}
+          className="w-full px-4 py-3 flex justify-between items-center hover:bg-gray-800/50 transition-all border-b border-gray-800"
         >
-          Add
+          <div className="flex items-center gap-2">
+            <h2 className="text-base font-bold text-gray-100 whitespace-nowrap">{title}</h2>
+            {selected[category].length > 0 && (
+              <span className="px-2 py-0.5 bg-white text-black rounded-full text-xs font-semibold">
+                {selected[category].length}
+              </span>
+            )}
+          </div>
+          <svg
+            className={`w-4 h-4 text-gray-400 transition-transform flex-shrink-0 ${isOpen ? 'rotate-180' : ''}`}
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+          </svg>
         </button>
+
+        {/* Section Content */}
+        {isOpen && (
+          <div className="px-4 pb-4 pt-4">
+            <div className="flex flex-wrap gap-2 mb-3">
+              {items.map(item => (
+                <button
+                  key={item}
+                  onClick={() => toggleSelection(category, item)}
+                  className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
+                    selected[category].includes(item)
+                      ? 'bg-white text-black'
+                      : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
+                  }`}
+                >
+                  {item}
+                </button>
+              ))}
+            </div>
+            <div className="flex gap-2">
+              <input
+                type="text"
+                value={customInputs[category]}
+                onChange={(e) => setCustomInputs(prev => ({ ...prev, [category]: e.target.value }))}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    e.preventDefault();
+                    addCustom(category);
+                  }
+                }}
+                placeholder="Add custom..."
+                className="w-full px-3 py-2 bg-gray-900 border border-gray-700 rounded-lg text-white text-sm placeholder-gray-500 focus:outline-none focus:border-white"
+              />
+              <button
+                onClick={() => addCustom(category)}
+                className="px-4 py-2 bg-gray-800 text-white text-sm rounded-lg hover:bg-gray-700 transition-all whitespace-nowrap"
+              >
+                Add
+              </button>
+            </div>
+            {selected[category].length > 0 && (
+              <div className="mt-2 text-xs text-gray-400">
+                Selected: {selected[category].join(', ')}
+              </div>
+            )}
+          </div>
+        )}
       </div>
-      {selected[category].length > 0 && (
-        <div className="mt-3 text-sm text-gray-400">
-          Selected: {selected[category].join(', ')}
-        </div>
-      )}
     </div>
   );
 
@@ -184,46 +223,179 @@ function App() {
   );
 
   return (
-    <div className="min-h-screen bg-black text-white p-8">
+    <div className="min-h-screen bg-black text-white">
+      {/* Fixed Navbar */}
       <nav className="fixed top-4 left-1/2 transform -translate-x-1/2 
-                        w-[90%] max-w-6xl z-50 
+                        w-[66%] max-w-6xl z-50 
                         backdrop-blur-xl bg-gray-900/70 border border-gray-700 
                         rounded-2xl shadow-xl transition-all duration-300 
                         hover:shadow-2xl hover:-translate-y-0.5">
-          <div className="flex justify-between items-center px-6 py-3">
-            {/* Logo only */}
-            <img
-              src={Logo}
-              alt="SkillSync Logo"
-              className="h-10 w-auto object-contain scale-125"
-              style={{ minHeight: '2.5rem', borderRadius: '1vh' }}
-            />
-    
-    
-            {/* Right-side link */}
-            <a
-              href="https://github.com/shubhook/skillsync.ai"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="px-3 py-1 rounded-lg bg-indigo-500 text-white 
-                        hover:bg-indigo-600 transition-all text-sm font-medium"
-              style={{padding: "10px"}}
-            >
-              GitHub
-            </a>
-          </div>
-        </nav>
-      <div className="max-w-7xl mx-auto">
+        <div className="flex justify-between items-center px-6 py-3">
+          <img
+            src={Logo}
+            alt="SkillSync Logo"
+            className="h-10 w-auto object-contain scale-125"
+            style={{ minHeight: '2.5rem', borderRadius: '1vh' }}
+          />
+          <a
+            href="https://github.com/shubhook/skillsync.ai"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="px-4 py-2 rounded-lg bg-indigo-500 text-white 
+                      hover:bg-indigo-600 transition-all text-sm font-medium"
+          >
+            GitHub
+          </a>
+        </div>
+      </nav>
+
+      {/* Main Content - Centered with max-width */}
+      <div className="max-w-5xl mx-auto px-6 pt-28 pb-16">
         <header className="mb-12 text-center">
-          {/* <h1 className="text-5xl font-bold mb-2" style={{fontFamily: "sans-serif"}}>SkillSync</h1> */}
-          <p className="text-gray-400" style={{fontFamily: "inherit"}}>Find curated projects tailored to your tech stack</p>
+          {/* <p className="text-gray-400 text-lg">Find curated projects tailored to your tech stack</p> */}
         </header>
 
+        {/* Horizontal Accordion Sections */}
         <div className="mb-12">
-          <Section title="1. Languages" category="languages" items={predefined.languages} />
-          <Section title="2. Tools/Frameworks" category="frameworks" items={predefined.frameworks} />
-          <Section title="3. Databases" category="databases" items={predefined.databases} />
-          <Section title="4. Other Skills" category="others" items={predefined.others} />
+          <div className="border border-gray-800 rounded-lg overflow-hidden bg-gray-900/50">
+            {/* Headers Row */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4">
+              <button
+                onClick={() => toggleSection('languages')}
+                className="w-full px-4 py-3 flex justify-between items-center hover:bg-gray-800/50 transition-all border-b border-gray-800 border-r border-gray-800 md:last:border-r-0"
+              >
+                <div className="flex items-center gap-2">
+                  <h2 className="text-base font-bold text-gray-100 whitespace-nowrap">1. Languages</h2>
+                  {selected.languages.length > 0 && (
+                    <span className="px-2 py-0.5 bg-white text-black rounded-full text-xs font-semibold">
+                      {selected.languages.length}
+                    </span>
+                  )}
+                </div>
+                <svg
+                  className={`w-4 h-4 text-gray-400 transition-transform flex-shrink-0 ${openSection === 'languages' ? 'rotate-180' : ''}`}
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+              </button>
+
+              <button
+                onClick={() => toggleSection('frameworks')}
+                className="w-full px-4 py-3 flex justify-between items-center hover:bg-gray-800/50 transition-all border-b border-gray-800 border-r border-gray-800 md:last:border-r-0"
+              >
+                <div className="flex items-center gap-2">
+                  <h2 className="text-base font-bold text-gray-100 whitespace-nowrap">2. Frameworks</h2>
+                  {selected.frameworks.length > 0 && (
+                    <span className="px-2 py-0.5 bg-white text-black rounded-full text-xs font-semibold">
+                      {selected.frameworks.length}
+                    </span>
+                  )}
+                </div>
+                <svg
+                  className={`w-4 h-4 text-gray-400 transition-transform flex-shrink-0 ${openSection === 'frameworks' ? 'rotate-180' : ''}`}
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+              </button>
+
+              <button
+                onClick={() => toggleSection('databases')}
+                className="w-full px-4 py-3 flex justify-between items-center hover:bg-gray-800/50 transition-all border-b border-gray-800 border-r border-gray-800 md:last:border-r-0"
+              >
+                <div className="flex items-center gap-2">
+                  <h2 className="text-base font-bold text-gray-100 whitespace-nowrap">3. Databases</h2>
+                  {selected.databases.length > 0 && (
+                    <span className="px-2 py-0.5 bg-white text-black rounded-full text-xs font-semibold">
+                      {selected.databases.length}
+                    </span>
+                  )}
+                </div>
+                <svg
+                  className={`w-4 h-4 text-gray-400 transition-transform flex-shrink-0 ${openSection === 'databases' ? 'rotate-180' : ''}`}
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+              </button>
+
+              <button
+                onClick={() => toggleSection('others')}
+                className="w-full px-4 py-3 flex justify-between items-center hover:bg-gray-800/50 transition-all border-b border-gray-800"
+              >
+                <div className="flex items-center gap-2">
+                  <h2 className="text-base font-bold text-gray-100 whitespace-nowrap">4. Others</h2>
+                  {selected.others.length > 0 && (
+                    <span className="px-2 py-0.5 bg-white text-black rounded-full text-xs font-semibold">
+                      {selected.others.length}
+                    </span>
+                  )}
+                </div>
+                <svg
+                  className={`w-4 h-4 text-gray-400 transition-transform flex-shrink-0 ${openSection === 'others' ? 'rotate-180' : ''}`}
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+              </button>
+            </div>
+
+            {/* Content Area - Full Width */}
+            {openSection && (
+              <div className="px-4 pb-4 pt-4">
+                <div className="flex flex-wrap gap-2 mb-3">
+                  {predefined[openSection].map(item => (
+                    <button
+                      key={item}
+                      onClick={() => toggleSelection(openSection, item)}
+                      className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
+                        selected[openSection].includes(item)
+                          ? 'bg-white text-black'
+                          : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
+                      }`}
+                    >
+                      {item}
+                    </button>
+                  ))}
+                </div>
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    value={customInputs[openSection]}
+                    onChange={(e) => setCustomInputs(prev => ({ ...prev, [openSection]: e.target.value }))}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        e.preventDefault();
+                        addCustom(openSection);
+                      }
+                    }}
+                    placeholder="Add custom..."
+                    className="w-full px-3 py-2 bg-gray-900 border border-gray-700 rounded-lg text-white text-sm placeholder-gray-500 focus:outline-none focus:border-white"
+                  />
+                  <button
+                    onClick={() => addCustom(openSection)}
+                    className="px-4 py-2 bg-gray-800 text-white text-sm rounded-lg hover:bg-gray-700 transition-all whitespace-nowrap"
+                  >
+                    Add
+                  </button>
+                </div>
+                {selected[openSection].length > 0 && (
+                  <div className="mt-2 text-xs text-gray-400">
+                    Selected: {selected[openSection].join(', ')}
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
 
           <div className="flex justify-center mt-8">
             <button
@@ -253,6 +425,8 @@ function App() {
           </div>
         )}
       </div>
+
+      {/* Footer */}
       <footer className="mt-16 border-t border-gray-800 py-6 text-center text-gray-400 text-sm">
         <p className="mb-3">
           <a
@@ -273,7 +447,7 @@ function App() {
             Twitter
           </a>
         </p>
-        <p className=" text-gray-500">Build with ❤️</p>
+        <p className="text-gray-500">Built with ❤️</p>
       </footer>
     </div>
   );
