@@ -4,11 +4,10 @@ import { useBookmarks, Project } from "../context/BookmarksContext";
 interface ProjectCardProps {
   project: Project;
   index: number;
-  showRemoveBookmark?: boolean;
   onRemove?: () => void;
 }
 
-const ProjectCard: React.FC<ProjectCardProps> = ({ project, index, showRemoveBookmark = false, onRemove }) => {
+const ProjectCard: React.FC<ProjectCardProps> = ({ project, index, onRemove }) => {
   const { addBookmark, removeBookmark, isBookmarked, getBookmarkId } = useBookmarks();
   const bookmarked = isBookmarked(project);
 
