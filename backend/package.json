@@ -1,22 +1,31 @@
 {
-  "name": "SkillSync Backend",
+  "name": "skillsync-backend",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "SkillSync Backend API",
+  "main": "dist/index.js",
   "scripts": {
-    "dev": "nodemon index.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "dev": "ts-node-dev --respawn --transpile-only src/index.ts",
+    "typecheck": "tsc --noEmit"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "type": "commonjs",
   "dependencies": {
     "@google/genai": "^1.13.0",
     "@google/generative-ai": "^0.24.1",
     "cors": "^2.8.5",
     "dotenv": "^17.2.1",
     "express": "^5.1.0",
-    "nodemon": "^3.1.10"
+    "express-rate-limit": "^8.2.1"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.17",
+    "@types/express": "^5.0.0",
+    "@types/express-rate-limit": "^5.1.3",
+    "@types/node": "^22.15.0",
+    "ts-node-dev": "^2.0.0",
+    "typescript": "^5.7.3"
   }
 }
