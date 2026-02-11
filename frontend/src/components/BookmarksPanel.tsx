@@ -69,7 +69,6 @@ const BookmarksPanel: React.FC<BookmarksPanelProps> = ({ isOpen, onClose }) => {
                   key={project.id} 
                   project={project} 
                   index={idx + 1}
-                  showRemoveBookmark
                 />
               ))}
             </div>
