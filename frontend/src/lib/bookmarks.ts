@@ -1,6 +1,8 @@
-import type { BookmarkedProject, Project } from '../types';
+import type { BookmarkedProject, BookmarkStatus, Project } from '../types';
 
 export const STORAGE_KEY = 'skillsync_bookmarks';
+
+const STATUSES: BookmarkStatus[] = ['saved', 'building', 'done'];
 
 // Two projects are the same bookmark if their titles match, ignoring case and outer whitespace.
 export function projectKey(project: Pick<Project, 'title'>): string {
@@ -8,15 +10,28 @@ export function projectKey(project: Pick<Project, 'title'>): string {
 }
 
 // crypto.randomUUID only exists in secure contexts, so plain-http LAN testing needs a fallback.
-function newId(): string {
+export function newId(): string {
   if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
     return crypto.randomUUID();
   }
   return `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`;
 }
 
+// Copies only the Project fields, dropping UI extras like a result id or variation info.
+export function toProject(p: Project): Project {
+  return {
+    title: p.title,
+    description: p.description,
+    difficulty: p.difficulty,
+    estimatedTime: p.estimatedTime,
+    techStack: p.techStack,
+    resources: p.resources,
+    learningOutcomes: p.learningOutcomes,
+  };
+}
+
 export function createBookmark(project: Project, now = Date.now()): BookmarkedProject {
-  return { ...project, id: newId(), bookmarkedAt: now };
+  return { ...toProject(project), id: newId(), bookmarkedAt: now, status: 'saved' };
 }
 
 function stringArray(value: unknown): string[] {
@@ -24,7 +39,7 @@ function stringArray(value: unknown): string[] {
 }
 
 // Reads bookmarks saved by any version of the app. Drops entries without an id or title
-// and fills in missing arrays so a bad entry can't crash the UI.
+// and fills in missing fields so a bad entry can't crash the UI.
 export function parseStoredBookmarks(raw: string | null): BookmarkedProject[] {
   if (!raw) return [];
 
@@ -54,6 +69,8 @@ export function parseStoredBookmarks(raw: string | null): BookmarkedProject[] {
             typeof r === 'object' && r !== null && typeof r.name === 'string' && typeof r.url === 'string')
         : [],
       bookmarkedAt: typeof b.bookmarkedAt === 'number' ? b.bookmarkedAt : 0,
+      // Bookmarks saved before statuses existed start as "saved".
+      status: STATUSES.includes(b.status as BookmarkStatus) ? (b.status as BookmarkStatus) : 'saved',
     }];
   });
 }
@@ -82,4 +99,10 @@ export function toggleBookmarkIn(bookmarks: BookmarkedProject[], project: Projec
     return bookmarks.filter((b) => projectKey(b) !== key);
   }
   return [createBookmark(project), ...bookmarks];
+}
+
+// Puts a removed bookmark back, newest first, unless one with the same title exists again.
+export function restoreBookmarkIn(bookmarks: BookmarkedProject[], bookmark: BookmarkedProject): BookmarkedProject[] {
+  if (bookmarks.some((b) => projectKey(b) === projectKey(bookmark))) return bookmarks;
+  return [...bookmarks, bookmark].sort((a, b) => b.bookmarkedAt - a.bookmarkedAt);
 }

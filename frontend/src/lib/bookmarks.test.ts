@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { Project } from '../types';
-import { createBookmark, parseStoredBookmarks, projectKey, toggleBookmarkIn } from './bookmarks';
+import { createBookmark, parseStoredBookmarks, projectKey, restoreBookmarkIn, toggleBookmarkIn } from './bookmarks';
 
 const project = (title: string): Project => ({
   title,
@@ -66,5 +66,34 @@ describe('parseStoredBookmarks', () => {
     const [only, ...rest] = parseStoredBookmarks(raw);
     expect(rest).toEqual([]);
     expect(only).toMatchObject({ id: 'y', title: 'Partial', techStack: [], resources: [], learningOutcomes: [] });
+  });
+
+  it('defaults a missing or unknown status to saved and keeps valid ones', () => {
+    const raw = JSON.stringify([{ id: 'a', title: 'A' }, { id: 'b', title: 'B', status: 'building' }, { id: 'c', title: 'C', status: 'nope' }]);
+    expect(parseStoredBookmarks(raw).map((b) => b.status)).toEqual(['saved', 'building', 'saved']);
+  });
+});
+
+describe('createBookmark', () => {
+  it('drops UI-only fields like a result id or variation info', () => {
+    const bookmark = createBookmark({ ...project('A'), id: 'result-1', variationOf: { title: 'B', direction: 'easier' } } as Project);
+    expect(bookmark).not.toHaveProperty('variationOf');
+    expect(bookmark.id).not.toBe('result-1');
+    expect(bookmark.status).toBe('saved');
+  });
+});
+
+describe('restoreBookmarkIn', () => {
+  it('puts a removed bookmark back in date order', () => {
+    const older = createBookmark(project('Old'), 1);
+    const newer = createBookmark(project('New'), 3);
+    const middle = createBookmark(project('Middle'), 2);
+    expect(restoreBookmarkIn([newer, older], middle).map((b) => b.title)).toEqual(['New', 'Middle', 'Old']);
+  });
+
+  it('skips the restore if the same title was saved again', () => {
+    const original = createBookmark(project('A'), 1);
+    const again = createBookmark(project('a'), 2);
+    expect(restoreBookmarkIn([again], original)).toEqual([again]);
   });
 });

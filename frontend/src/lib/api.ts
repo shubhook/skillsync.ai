@@ -1,4 +1,5 @@
-import type { Project } from '../types';
+import type { Preferences, Project, RefineDirection, Tech } from '../types';
+import { toDataset } from './stack';
 
 // Falls back to the local backend only in dev, so a prod build without VITE_API_URL
 // reports a clear error instead of calling localhost.
@@ -7,11 +8,16 @@ const API_URL = import.meta.env.VITE_API_URL || (import.meta.env.DEV ? 'http://l
 // The backend gives Gemini 45s, so wait a little longer than that.
 const REQUEST_TIMEOUT_MS = 60_000;
 
-export interface TechPayload {
-  language: string;
-  framework: string;
-  database: string;
-  others: string;
+export interface GenerateRequest {
+  techs: Tech[];
+  preferences: Preferences;
+  // Titles already shown, so the model doesn't repeat them.
+  exclude?: string[];
+  count?: number;
+  refine?: {
+    direction: RefineDirection;
+    project: Pick<Project, 'title' | 'description' | 'difficulty'>;
+  };
 }
 
 // Error whose message is safe to show to the user.
@@ -22,7 +28,7 @@ interface ApiBody {
   response?: { projects?: unknown };
 }
 
-export async function generateProjects(payload: TechPayload): Promise<Project[]> {
+export async function generateProjects({ techs, preferences, exclude = [], count = 3, refine }: GenerateRequest): Promise<Project[]> {
   if (!API_URL) {
     throw new GenerateError('The app is missing its API URL. Set VITE_API_URL and rebuild.');
   }
@@ -32,7 +38,7 @@ export async function generateProjects(payload: TechPayload): Promise<Project[]>
     res = await fetch(`${API_URL}/ai`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ dataset: payload }),
+      body: JSON.stringify({ dataset: toDataset(techs), preferences, exclude, count, refine }),
       signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
     });
   } catch (err) {

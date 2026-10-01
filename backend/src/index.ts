@@ -97,12 +97,15 @@ app.post('/ai', aiLimiter, aiHourlyLimiter, async (req: Request, res: Response) 
     res.status(400).json({ error: parsed.error });
     return;
   }
-  const dataset = parsed.value;
+  const request = parsed.value;
 
-  console.log(`[${new Date().toISOString()}] Generating project suggestions for:`, JSON.stringify(dataset));
+  console.log(
+    `[${new Date().toISOString()}] Generating ${request.count} project(s)${request.refine ? ` (${request.refine.direction})` : ''} for:`,
+    JSON.stringify(request.dataset),
+  );
 
   try {
-    const response = await generateProjects(dataset);
+    const response = await generateProjects(request);
     console.log(`[${new Date().toISOString()}] Success - Generated ${response.projects.length} projects`);
     res.json({ response });
   } catch (error) {

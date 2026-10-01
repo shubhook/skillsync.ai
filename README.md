@@ -5,9 +5,14 @@
 ## Features
 
 - Project suggestions from Google Gemini, based on the technologies you pick
-- Predefined tech stacks, plus custom entries
-- Difficulty, estimated time, resources, and learning outcomes for each idea
-- Bookmarks saved in the browser (localStorage)
+- Searchable stack picker with a catalog of 48 technologies, custom entries, and one-click example stacks
+- Optional tuning: level, time available, goal, and up to 3 interest areas
+- Results in batches you can switch between; regenerating never wipes earlier ideas
+- "More like this", "Easier", and "Harder" on each idea, without repeating ideas you've already seen
+- Copy any idea as a README skeleton in Markdown
+- Bookmarks with a status (Saved, Building, Done), undo, and Markdown export
+- Light and dark themes (follows your system until you pick one)
+- Stack and preferences stored in the URL, so links are shareable
 - Per-IP rate limiting on the AI endpoint (5/minute, 30/hour)
 
 ## Tech stack

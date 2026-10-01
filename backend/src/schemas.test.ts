@@ -21,9 +21,8 @@ const validProject = {
 describe('parseAiRequest', () => {
   it('splits comma-separated fields into trimmed items', () => {
     const result = parseAiRequest({ dataset: { language: 'JavaScript, Go ,', framework: 'React.js' } });
-    expect(result).toEqual({
-      ok: true,
-      value: { language: ['JavaScript', 'Go'], framework: ['React.js'], database: [], others: [] },
+    expect(result.ok && result.value.dataset).toEqual({
+      language: ['JavaScript', 'Go'], framework: ['React.js'], database: [], others: [],
     });
   });
 
@@ -54,7 +53,40 @@ describe('parseAiRequest', () => {
 
   it('strips control characters', () => {
     const result = parseAiRequest({ dataset: { language: 'Ja\nva\u0000Script' } });
-    expect(result.ok && result.value.language).toEqual(['JavaScript']);
+    expect(result.ok && result.value.dataset.language).toEqual(['JavaScript']);
+  });
+});
+
+describe('parseAiRequest options', () => {
+  const dataset = { language: 'Go' };
+
+  it('defaults to 3 projects with no preferences', () => {
+    const result = parseAiRequest({ dataset });
+    expect(result.ok && result.value).toMatchObject({ count: 3, exclude: [], preferences: { interests: [] } });
+    expect(result.ok && result.value.refine).toBeUndefined();
+  });
+
+  it('accepts valid preferences and excluded titles', () => {
+    const preferences = { level: 'Beginner', timeBudget: 'weekend', goal: 'hackathon', interests: ['Health'] };
+    const result = parseAiRequest({ dataset, preferences, exclude: ['Trail Buddy'] });
+    expect(result.ok && result.value).toMatchObject({ preferences, exclude: ['Trail Buddy'] });
+  });
+
+  it('rejects unknown preference values', () => {
+    expect(parseAiRequest({ dataset, preferences: { level: 'Expert' } }).ok).toBe(false);
+    expect(parseAiRequest({ dataset, preferences: { interests: Array(6).fill('x') } }).ok).toBe(false);
+    expect(parseAiRequest({ dataset, count: 4 }).ok).toBe(false);
+  });
+
+  it('forces count to 1 for refinements', () => {
+    const refine = { direction: 'harder', project: { title: 'A', description: 'B', difficulty: 'Beginner' } };
+    const result = parseAiRequest({ dataset, count: 3, refine });
+    expect(result.ok && result.value.count).toBe(1);
+    expect(result.ok && result.value.refine).toEqual(refine);
+  });
+
+  it('rejects refinements without a project', () => {
+    expect(parseAiRequest({ dataset, refine: { direction: 'easier' } }).ok).toBe(false);
   });
 });
 
