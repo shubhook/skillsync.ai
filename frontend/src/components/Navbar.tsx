@@ -1,5 +1,6 @@
 import { useBookmarks } from '../context/BookmarksContext';
 import { useTheme } from '../hooks/useTheme';
+import LogoMark from './LogoMark';
 import Action from './ui/Action';
 import Badge from './ui/Badge';
 import { BookmarkIcon, MoonIcon, SunIcon } from './icons';
@@ -17,7 +18,7 @@ export default function Navbar({ onOpenBookmarks }: NavbarProps) {
     <header className="sticky top-0 z-40 border-b border-border bg-surface/85 backdrop-blur-md">
       <nav className="mx-auto flex max-w-page items-center justify-between px-4 py-3 sm:px-6" aria-label="Main">
         <a href="/" className="flex items-center gap-2 rounded-tight text-lg font-bold tracking-tight text-fg">
-          <img src="/logo.png" alt="" className="h-8 w-8 rounded-tight" />
+          <LogoMark className="h-8 w-8 shrink-0" />
           SkillSync
         </a>
         <div className="flex items-center gap-2">
