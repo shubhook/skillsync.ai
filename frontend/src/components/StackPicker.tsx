@@ -103,7 +103,7 @@ export default function StackPicker({ techs, onChange }: StackPickerProps) {
           choose(option);
         }}
         onMouseMove={() => setActiveIndex(i)}
-        className={`cursor-pointer rounded-md px-2.5 py-1.5 text-sm ${i === active ? 'bg-accent/10 text-fg' : 'text-muted'}`}
+        className={`cursor-pointer rounded-tight px-3 py-2 text-sm ${i === active ? 'bg-accent-soft text-fg' : 'text-muted'}`}
       >
         {label}
       </li>
@@ -112,7 +112,7 @@ export default function StackPicker({ techs, onChange }: StackPickerProps) {
 
   return (
     <div>
-      <div className="mb-1.5 flex items-baseline justify-between gap-2">
+      <div className="mb-1 flex items-baseline justify-between gap-2">
         <label htmlFor={`${id}-input`} className="text-sm font-semibold text-fg">Your stack</label>
         <span className="text-xs text-muted">{techs.length}/{MAX_TECHS}</span>
       </div>
@@ -122,10 +122,10 @@ export default function StackPicker({ techs, onChange }: StackPickerProps) {
 
       <div
         onClick={() => inputRef.current?.focus()}
-        className="flex min-h-[46px] cursor-text flex-wrap items-center gap-1.5 rounded-xl border border-border-strong bg-surface-2 p-2 focus-within:border-accent"
+        className="flex min-h-[44px] cursor-text flex-wrap items-center gap-1 rounded-mid border border-border-strong bg-surface p-2 focus-within:border-accent"
       >
         {techs.map((tech) => (
-          <span key={tech.name} className="inline-flex items-center gap-1 rounded-md border border-border-strong bg-surface py-0.5 pl-2 pr-1 text-xs font-medium text-fg">
+          <span key={tech.name} className="inline-flex items-center gap-1 rounded-tight border border-accent/25 bg-accent-soft py-1 pl-2 pr-1 text-xs font-semibold text-accent">
             {tech.name}
             <button
               type="button"
@@ -134,7 +134,7 @@ export default function StackPicker({ techs, onChange }: StackPickerProps) {
                 remove(tech.name);
               }}
               aria-label={`Remove ${tech.name}`}
-              className="rounded p-0.5 text-muted hover:bg-surface-2 hover:text-fg"
+              className="rounded-tight p-0.5 text-accent hover:bg-accent/15"
             >
               <CloseIcon className="h-3 w-3" />
             </button>
@@ -174,11 +174,11 @@ export default function StackPicker({ techs, onChange }: StackPickerProps) {
         role="listbox"
         aria-label="Technologies"
         hidden={!showList}
-        className="mt-1 max-h-64 overflow-y-auto rounded-xl border border-border-strong bg-surface p-1.5 shadow-lg"
+        className="mt-1 max-h-64 overflow-y-auto rounded-mid border border-border bg-surface p-1 shadow-card"
       >
         {groups.map((group) => (
           <li key={group.category} role="presentation">
-            <div className="px-2.5 pb-1 pt-2 text-[11px] font-semibold uppercase tracking-wide text-faint" aria-hidden="true">
+            <div className="px-3 pb-1 pt-2 text-[11px] font-semibold uppercase tracking-wide text-muted" aria-hidden="true">
               {CATEGORY_LABELS[group.category]}
             </div>
             <ul role="group" aria-label={CATEGORY_LABELS[group.category]}>

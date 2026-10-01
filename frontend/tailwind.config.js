@@ -1,7 +1,7 @@
 /** @type {import('tailwindcss').Config} */
 
-// Semantic colors come from CSS variables in src/index.css, so one set of classes
-// works for both the light and the dark theme.
+// Colors, radii, and shadow come from CSS variables in src/index.css, so one set of
+// classes works for both themes. See the "50% polymorphism" design system for the rules.
 const token = (name) => `rgb(var(--c-${name}) / <alpha-value>)`;
 
 export default {
@@ -13,11 +13,12 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        sans: ['"Inter Variable"', 'Inter', '-apple-system', 'BlinkMacSystemFont', '"Segoe UI"', 'sans-serif'],
-        mono: ['ui-monospace', 'SFMono-Regular', 'Menlo', 'Consolas', 'monospace'],
+        sans: ['"Instrument Sans"', 'system-ui', 'sans-serif'],
+        mono: ['"JetBrains Mono"', 'ui-monospace', 'monospace'],
       },
       colors: {
         bg: token('bg'),
+        'bg-deep': token('bg-deep'),
         surface: token('surface'),
         'surface-2': token('surface-2'),
         border: token('border'),
@@ -26,11 +27,28 @@ export default {
         muted: token('muted'),
         faint: token('faint'),
         accent: token('accent'),
+        'accent-soft': token('accent-soft'),
         'accent-ink': token('accent-ink'),
         beginner: token('beginner'),
         intermediate: token('intermediate'),
         advanced: token('advanced'),
         danger: token('danger'),
+        saved: token('saved'),
+        building: token('building'),
+        done: token('done'),
+      },
+      // The radius ladder. Use these names only (plus rounded-full for dots and spinners).
+      borderRadius: {
+        tight: '8px',
+        mid: '12px',
+        soft: '18px',
+        shell: '24px',
+      },
+      boxShadow: {
+        card: 'var(--shadow)',
+      },
+      maxWidth: {
+        page: '1080px',
       },
       keyframes: {
         shimmer: { from: { backgroundPosition: '200% 0' }, to: { backgroundPosition: '-200% 0' } },

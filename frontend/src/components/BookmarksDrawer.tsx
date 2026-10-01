@@ -5,6 +5,8 @@ import { STATUS_OPTIONS } from '../data/catalog';
 import { bookmarksToMarkdown, downloadText } from '../lib/markdown';
 import type { BookmarkStatus } from '../types';
 import ProjectCard from './ProjectCard';
+import Action from './ui/Action';
+import Segmented from './ui/Segmented';
 import { BookmarkIcon, CloseIcon, DownloadIcon } from './icons';
 
 interface BookmarksDrawerProps {
@@ -76,9 +78,9 @@ export default function BookmarksDrawer({ open, onClose }: BookmarksDrawerProps)
     toast({ message: 'Downloaded skillsync-projects.md' });
   };
 
-  const filters: { value: BookmarkStatus | 'all'; label: string; count: number }[] = [
-    { value: 'all', label: 'All', count: bookmarks.length },
-    ...STATUS_OPTIONS.map((o) => ({ value: o.value, label: o.label, count: count(o.value) })),
+  const filters: { value: BookmarkStatus | 'all'; label: string; tone?: BookmarkStatus }[] = [
+    { value: 'all', label: `All ${bookmarks.length}` },
+    ...STATUS_OPTIONS.map((o) => ({ value: o.value, label: `${o.label} ${count(o.value)}`, tone: o.tone })),
   ];
 
   return (
@@ -89,54 +91,48 @@ export default function BookmarksDrawer({ open, onClose }: BookmarksDrawerProps)
         role="dialog"
         aria-modal="true"
         aria-labelledby="bookmarks-title"
-        className="absolute inset-y-0 right-0 flex w-full max-w-xl flex-col border-l border-border bg-bg shadow-2xl animate-slide-in"
+        className="absolute inset-y-0 right-0 flex w-full max-w-xl flex-col border-l border-border bg-bg shadow-card animate-slide-in"
       >
-        <div className="flex items-start justify-between gap-4 border-b border-border px-5 py-4">
+        <div className="flex items-start justify-between gap-4 border-b border-border px-6 py-4">
           <div>
             <h2 id="bookmarks-title" className="text-lg font-semibold text-fg">Bookmarks</h2>
             <p className="text-sm text-muted">
               {bookmarks.length} {bookmarks.length === 1 ? 'project' : 'projects'} saved
             </p>
           </div>
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-2">
             {bookmarks.length > 0 && (
               <>
-                <button type="button" onClick={exportMarkdown} className="inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs font-medium text-muted hover:bg-surface-2 hover:text-fg">
-                  <DownloadIcon className="h-3.5 w-3.5" /> Export
-                </button>
-                <button type="button" onClick={clearAll} className="rounded-lg px-2.5 py-1.5 text-xs font-medium text-muted hover:bg-surface-2 hover:text-danger">
-                  Clear all
-                </button>
+                <Action variant="ghost" onClick={exportMarkdown}>
+                  <DownloadIcon className="h-3 w-3" /> Export
+                </Action>
+                <Action variant="ghost" onClick={clearAll}>Clear all</Action>
               </>
             )}
-            <button type="button" onClick={onClose} aria-label="Close bookmarks" className="rounded-lg p-2 text-muted hover:bg-surface-2 hover:text-fg">
-              <CloseIcon className="h-5 w-5" />
-            </button>
+            <Action variant="icon" onClick={onClose} aria-label="Close bookmarks" title="Close">
+              <CloseIcon className="h-4 w-4" />
+            </Action>
           </div>
         </div>
 
         {bookmarks.length > 0 && (
-          <div className="flex gap-1 overflow-x-auto border-b border-border px-5 py-2" role="group" aria-label="Filter by status">
-            {filters.map((f) => (
-              <button
-                key={f.value}
-                type="button"
-                aria-pressed={filter === f.value}
-                onClick={() => setFilter(f.value)}
-                className={`flex-none rounded-lg px-3 py-1.5 text-xs font-medium ${
-                  filter === f.value ? 'bg-surface-2 text-fg' : 'text-muted hover:text-fg'
-                }`}
-              >
-                {f.label} <span className="text-faint">{f.count}</span>
-              </button>
-            ))}
+          <div className="border-b border-border px-6 py-3">
+            <Segmented
+              label="Filter by status"
+              hideLabel
+              size="sm"
+              includeAny={false}
+              options={filters}
+              value={filter}
+              onChange={(value) => setFilter(value ?? 'all')}
+            />
           </div>
         )}
 
-        <div className="flex-1 overflow-y-auto p-5">
+        <div className="flex-1 overflow-y-auto p-6">
           {bookmarks.length === 0 ? (
             <div className="flex h-full flex-col items-center justify-center text-center">
-              <BookmarkIcon className="mb-4 h-12 w-12 text-faint" />
+              <BookmarkIcon className="mb-4 h-12 w-12 text-border-strong" />
               <h3 className="mb-1 font-semibold text-fg">No bookmarks yet</h3>
               <p className="max-w-xs text-sm text-muted">Save ideas you like and track them here as you build.</p>
             </div>

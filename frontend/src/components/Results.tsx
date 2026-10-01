@@ -3,6 +3,7 @@ import { SAMPLE_PROJECT } from '../data/catalog';
 import type { PendingBatch } from '../hooks/useGenerator';
 import type { Batch, RefineDirection, ResultProject } from '../types';
 import ProjectCard, { SkeletonCard } from './ProjectCard';
+import Action from './ui/Action';
 import { AlertIcon, CloseIcon, RefreshIcon } from './icons';
 
 interface ResultsProps {
@@ -37,7 +38,7 @@ const Results = forwardRef<HTMLHeadingElement, ResultsProps>(function Results(
   headingRef,
 ) {
   const elapsed = useElapsedSeconds(pending?.startedAt);
-  const tabRefs = useRef<(HTMLButtonElement | null)[]>([]);
+  const tablistRef = useRef<HTMLDivElement>(null);
   const activeIndex = batches.findIndex((b) => b.id === activeBatchId);
   const activeBatch = pending ? null : batches[activeIndex] ?? batches.at(-1) ?? null;
   const [announcement, setAnnouncement] = useState('');
@@ -54,7 +55,7 @@ const Results = forwardRef<HTMLHeadingElement, ResultsProps>(function Results(
     e.preventDefault();
     const next = (index + step + batches.length) % batches.length;
     onSelectBatch(batches[next].id);
-    tabRefs.current[next]?.focus();
+    tablistRef.current?.querySelectorAll<HTMLElement>('[role="tab"]')[next]?.focus();
   };
 
   const isEmpty = batches.length === 0 && !pending;
@@ -66,23 +67,20 @@ const Results = forwardRef<HTMLHeadingElement, ResultsProps>(function Results(
           {isEmpty ? 'Your ideas show up here' : 'Ideas'}
         </h2>
         {batches.length > 0 && !pending && (
-          <button type="button" onClick={onClear} className="text-xs font-medium text-muted hover:text-fg">
-            Clear history
-          </button>
+          <Action variant="ghost" onClick={onClear}>Clear history</Action>
         )}
       </div>
 
       <p className="sr-only" aria-live="polite">{announcement}</p>
 
       {(batches.length > 1 || (pending && batches.length > 0)) && (
-        <div role="tablist" aria-label="Batches" className="mb-4 flex gap-1 overflow-x-auto pb-1">
+        <div ref={tablistRef} role="tablist" aria-label="Batches" className="mb-4 flex gap-2 overflow-x-auto p-1">
           {batches.map((batch, i) => {
             const selected = !pending && batch.id === activeBatch?.id;
             return (
-              <button
+              <Action
                 key={batch.id}
-                ref={(el) => { tabRefs.current[i] = el; }}
-                type="button"
+                variant="ghost"
                 role="tab"
                 id={`tab-${batch.id}`}
                 aria-selected={selected}
@@ -92,33 +90,31 @@ const Results = forwardRef<HTMLHeadingElement, ResultsProps>(function Results(
                 onClick={() => onSelectBatch(batch.id)}
                 onKeyDown={(e) => onTabKeyDown(e, i)}
                 title={batchLabel(batch)}
-                className={`flex-none rounded-lg border px-3 py-1.5 text-xs font-medium transition-colors disabled:cursor-default ${
-                  selected ? 'border-border-strong bg-surface text-fg' : 'border-transparent text-muted hover:text-fg'
-                }`}
+                className="flex-none"
               >
                 Batch {i + 1}
-              </button>
+              </Action>
             );
           })}
           {pending && (
-            <span role="tab" aria-selected="true" aria-controls="batch-panel" className="flex flex-none items-center gap-2 rounded-lg border border-border-strong bg-surface px-3 py-1.5 text-xs font-medium text-fg">
+            <Action as="span" variant="ghost" role="tab" aria-selected="true" aria-controls="batch-panel" className="flex-none">
               <span className="h-2 w-2 animate-pulse rounded-full bg-accent" aria-hidden="true" />
               Batch {batches.length + 1}
-            </span>
+            </Action>
           )}
         </div>
       )}
 
       {error && (
-        <div role="alert" className="mb-4 flex items-start gap-3 rounded-xl border border-danger/40 bg-danger/10 p-4 text-sm">
-          <AlertIcon className="mt-0.5 h-5 w-5 flex-none text-danger" />
+        <div role="alert" className="mb-4 flex items-center gap-3 rounded-mid border border-danger/35 bg-danger/10 p-3 text-sm">
+          <AlertIcon className="h-5 w-5 flex-none text-danger" />
           <p className="flex-1 text-fg">{error}</p>
-          <button type="button" onClick={onRetry} className="inline-flex flex-none items-center gap-1 font-semibold text-accent hover:underline">
-            <RefreshIcon className="h-3.5 w-3.5" /> Retry
-          </button>
-          <button type="button" onClick={onDismissError} aria-label="Dismiss error" className="flex-none rounded p-0.5 text-muted hover:text-fg">
+          <Action variant="ghost" onClick={onRetry} className="flex-none">
+            <RefreshIcon className="h-3 w-3" /> Retry
+          </Action>
+          <Action variant="icon" onClick={onDismissError} aria-label="Dismiss error">
             <CloseIcon className="h-4 w-4" />
-          </button>
+          </Action>
         </div>
       )}
 
@@ -128,7 +124,7 @@ const Results = forwardRef<HTMLHeadingElement, ResultsProps>(function Results(
             <p role="status" className="flex items-center gap-2 text-sm text-muted">
               <span className="h-2 w-2 animate-pulse rounded-full bg-accent" aria-hidden="true" />
               Generating {pending.count} ideas · {elapsed}s
-              <span className="text-faint">· usually 10-20 seconds</span>
+              <span>· usually 10-20 seconds</span>
             </p>
             {Array.from({ length: pending.count }, (_, i) => <SkeletonCard key={i} />)}
           </>
@@ -141,11 +137,13 @@ const Results = forwardRef<HTMLHeadingElement, ResultsProps>(function Results(
               {activeBatch.preferences.level && ` · ${activeBatch.preferences.level}`}
               {activeBatch.preferences.interests.length > 0 && ` · ${activeBatch.preferences.interests.join(', ')}`}
             </p>
-            {activeBatch.projects.map((project) => (
+            {/* Featured goes to the first idea only: at most one per group. */}
+            {activeBatch.projects.map((project, i) => (
               <ProjectCard
                 key={project.id}
                 mode="result"
                 project={project}
+                featured={i === 0}
                 refining={refining[project.id]}
                 onRefine={(direction) => onRefine(activeBatch.id, project, direction)}
               />

@@ -1,20 +1,30 @@
 import { KeyboardEvent, useId, useRef } from 'react';
 
+export type SegmentedTone = 'saved' | 'building' | 'done';
+
 interface SegmentedProps<T extends string> {
   label: string;
-  options: { value: T; label: string }[];
-  // undefined means "Any"
+  // Visually hide the label (it's still announced). Use when the context already labels the control.
+  hideLabel?: boolean;
+  options: { value: T; label: string; tone?: SegmentedTone }[];
+  // Adds an "Any" option first, meaning no value (undefined).
+  includeAny?: boolean;
   value: T | undefined;
   onChange: (value: T | undefined) => void;
   size?: 'sm' | 'md';
 }
 
-// A radio group drawn as a segmented control, with an "Any" option first.
+// Single-select only (use chips for multi-select). Not polymorphic in element, only in size.
+// Track uses surface-2; the active option uses surface plus a light shadow.
 // Arrow keys move the selection, following the WAI-ARIA radio group pattern.
-export default function Segmented<T extends string>({ label, options, value, onChange, size = 'md' }: SegmentedProps<T>) {
+export default function Segmented<T extends string>({
+  label, hideLabel, options, includeAny = true, value, onChange, size = 'md',
+}: SegmentedProps<T>) {
   const labelId = useId();
   const refs = useRef<(HTMLButtonElement | null)[]>([]);
-  const all: { value: T | undefined; label: string }[] = [{ value: undefined, label: 'Any' }, ...options];
+  const all: { value: T | undefined; label: string; tone?: SegmentedTone }[] = includeAny
+    ? [{ value: undefined, label: 'Any' }, ...options]
+    : options;
   const selectedIndex = Math.max(0, all.findIndex((o) => o.value === value));
 
   const onKeyDown = (e: KeyboardEvent) => {
@@ -28,12 +38,12 @@ export default function Segmented<T extends string>({ label, options, value, onC
 
   return (
     <div>
-      <p id={labelId} className="mb-1.5 text-xs font-medium text-muted">{label}</p>
+      <p id={labelId} className={hideLabel ? 'sr-only' : 'mb-2 text-xs font-medium text-muted'}>{label}</p>
       <div
         role="radiogroup"
         aria-labelledby={labelId}
         onKeyDown={onKeyDown}
-        className="grid gap-1 rounded-lg border border-border-strong bg-surface-2 p-1"
+        className="segmented"
         style={{ gridTemplateColumns: `repeat(${all.length}, minmax(0, 1fr))` }}
       >
         {all.map((option, i) => {
@@ -45,11 +55,10 @@ export default function Segmented<T extends string>({ label, options, value, onC
               type="button"
               role="radio"
               aria-checked={checked}
+              data-tone={option.tone}
               tabIndex={checked ? 0 : -1}
               onClick={() => onChange(option.value)}
-              className={`truncate rounded-md px-1 font-medium transition-colors ${size === 'sm' ? 'py-1 text-[11px]' : 'py-1.5 text-xs'} ${
-                checked ? 'bg-surface text-fg shadow-sm ring-1 ring-border-strong' : 'text-muted hover:text-fg'
-              }`}
+              className={size === 'sm' ? 'text-[11px]' : 'text-xs'}
             >
               {option.label}
             </button>

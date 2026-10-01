@@ -66,6 +66,18 @@ Visit `http://localhost:3001`.
 
 CI runs all of these on every push to `main` and on pull requests.
 
+## Design system
+
+The frontend follows the "50% polymorphism" design system: shared tokens, with components that may change their element (`as`) and their role styling (variant or density), but never the colors, typeface, radius ladder, or accent.
+
+- Tokens (colors for both themes, radius ladder `tight · mid · soft · shell`, shadow) live in `frontend/src/index.css` and `frontend/tailwind.config.js`.
+- Primitives live in `frontend/src/components/ui/`:
+  - `Action` (`as`: button · a · span, `variant`: solid · ghost · link · icon)
+  - `Card` (`density`: default · compact · featured, `as`: article · div · li)
+  - `Segmented` (single-select, `size`: sm · md)
+  - `Badge` (`tone`: beginner · intermediate · advanced · neutral)
+- `components/ui/contracts.typecheck.tsx` makes the build fail if someone widens those limits.
+
 ## Environment variables
 
 | Variable | Where | Required | Notes |

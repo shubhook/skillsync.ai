@@ -51,10 +51,10 @@ export const GOAL_OPTIONS: { value: Goal; label: string }[] = [
   { value: 'hackathon', label: 'Hackathon' },
 ];
 
-export const STATUS_OPTIONS: { value: BookmarkStatus; label: string }[] = [
-  { value: 'saved', label: 'Saved' },
-  { value: 'building', label: 'Building' },
-  { value: 'done', label: 'Done' },
+export const STATUS_OPTIONS: { value: BookmarkStatus; label: string; tone: BookmarkStatus }[] = [
+  { value: 'saved', label: 'Saved', tone: 'saved' },
+  { value: 'building', label: 'Building', tone: 'building' },
+  { value: 'done', label: 'Done', tone: 'done' },
 ];
 
 // Shown on the first visit so people can see what a result looks like.

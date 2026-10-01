@@ -2,57 +2,175 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Colors are RGB channels so Tailwind's opacity modifiers work (bg-accent/10).
-   Text tokens are chosen to pass WCAG AA (4.5:1) on both bg and surface. */
+/* Tokens from the SkillSync "50% polymorphism" design system.
+   Colors are RGB channels so Tailwind's opacity modifiers work (bg-accent/10).
+   The spec defines the light values; dark keeps the same warm neutrals and the
+   same green accent family, lightened for contrast. */
 :root {
-  --c-bg: 250 250 250;
-  --c-surface: 255 255 255;
-  --c-surface-2: 244 244 245;
-  --c-border: 228 228 231;
-  --c-border-strong: 212 212 216;
-  --c-fg: 24 24 27;
-  --c-muted: 82 82 91;
-  --c-faint: 113 113 122;
-  --c-accent: 79 70 229;
-  --c-accent-ink: 255 255 255;
-  --c-beginner: 4 120 87;
-  --c-intermediate: 146 64 14;
-  --c-advanced: 190 18 60;
-  --c-danger: 190 18 60;
+  --c-bg: 247 246 243;
+  --c-bg-deep: 239 236 230;
+  --c-surface: 255 252 248;
+  --c-surface-2: 243 240 234;
+  --c-border: 228 223 214;
+  --c-border-strong: 208 201 188;
+  --c-fg: 28 26 22;
+  --c-muted: 92 87 78;
+  --c-faint: 138 132 120;
+  --c-accent: 47 111 94;
+  --c-accent-soft: 228 240 235;
+  --c-accent-ink: 247 246 243;
+  --c-beginner: 31 122 87;
+  --c-intermediate: 154 91 18;
+  --c-advanced: 180 35 74;
+  --c-danger: 180 35 74;
+  --c-saved: 180 35 74;
+  --c-building: 37 99 166;
+  --c-done: 31 122 87;
+  --shadow: 0 1px 0 rgb(28 26 22 / 0.04), 0 10px 28px -18px rgb(28 26 22 / 0.28);
+  --page-wash:
+    radial-gradient(1000px 520px at 0% -5%, #e8f2ee 0%, transparent 55%),
+    radial-gradient(800px 420px at 100% 0%, #f3ebe0 0%, transparent 50%);
   color-scheme: light;
 }
 
 .dark {
-  --c-bg: 15 15 18;
-  --c-surface: 24 24 27;
-  --c-surface-2: 31 31 35;
-  --c-border: 42 42 48;
-  --c-border-strong: 63 63 70;
-  --c-fg: 244 244 245;
-  --c-muted: 161 161 170;
-  --c-faint: 130 130 140;
-  --c-accent: 129 140 248;
-  --c-accent-ink: 15 15 18;
-  --c-beginner: 52 211 153;
-  --c-intermediate: 251 191 36;
-  --c-advanced: 251 113 133;
-  --c-danger: 253 164 175;
+  --c-bg: 20 19 16;
+  --c-bg-deep: 15 14 12;
+  --c-surface: 28 26 23;
+  --c-surface-2: 36 34 30;
+  --c-border: 50 47 41;
+  --c-border-strong: 70 66 58;
+  --c-fg: 242 238 230;
+  --c-muted: 184 177 164;
+  --c-faint: 143 136 123;
+  --c-accent: 111 191 165;
+  --c-accent-soft: 31 53 48;
+  --c-accent-ink: 20 19 16;
+  --c-beginner: 95 199 156;
+  --c-intermediate: 226 166 90;
+  --c-advanced: 240 122 149;
+  --c-danger: 240 122 149;
+  --c-saved: 240 122 149;
+  --c-building: 125 176 232;
+  --c-done: 95 199 156;
+  --shadow: 0 1px 0 rgb(0 0 0 / 0.2), 0 12px 28px -18px rgb(0 0 0 / 0.6);
+  --page-wash:
+    radial-gradient(1000px 520px at 0% -5%, rgb(31 53 48 / 0.55) 0%, transparent 55%),
+    radial-gradient(800px 420px at 100% 0%, rgb(52 42 30 / 0.45) 0%, transparent 50%);
   color-scheme: dark;
 }
 
 @layer base {
   body {
     @apply bg-bg text-fg font-sans antialiased;
-    line-height: 1.6;
+    background-image: var(--page-wash);
+    background-attachment: fixed;
+    line-height: 1.55;
   }
 
   ::selection {
     @apply bg-accent/25;
   }
 
+  /* One focus ring for every role. Locked by the design system. */
   :focus-visible {
     @apply outline outline-2 outline-offset-2 outline-accent;
   }
+}
+
+@layer components {
+  /* ---- Action: as + variant. Chrome follows the role; type and focus stay fixed. ---- */
+  /* Compact controls share a 32px box (the icon button). Ghost matches that height
+     so Bookmarks, README, Details, Export, and Close sit on the same pixel grid. */
+  .action {
+    @apply inline-flex items-center justify-center gap-1.5 border border-transparent font-semibold leading-none transition-colors duration-150;
+    font-size: 0.8125rem;
+    letter-spacing: -0.01em;
+  }
+  .action svg {
+    @apply block flex-none;
+  }
+  .action:disabled,
+  .action[aria-disabled='true'] {
+    @apply cursor-not-allowed opacity-40;
+  }
+  .action[data-variant='solid'] {
+    @apply rounded-mid border-accent bg-accent px-4 py-2 text-accent-ink hover:opacity-90;
+  }
+  .action[data-variant='ghost'] {
+    @apply h-8 rounded-tight border-border bg-surface-2 px-2.5 text-muted hover:border-border-strong hover:text-fg;
+  }
+  .action[data-variant='link'] {
+    @apply justify-start rounded-tight p-1 font-medium leading-normal text-accent underline underline-offset-[3px] hover:decoration-2;
+  }
+  .action[data-variant='icon'] {
+    @apply h-8 w-8 flex-none rounded-tight border-border bg-surface-2 p-0 text-muted hover:text-fg;
+  }
+  /* Toggled or selected state. Accent identity, same shape. */
+  .action[data-variant='ghost'][aria-pressed='true'],
+  .action[data-variant='ghost'][aria-selected='true'],
+  .action[data-variant='icon'][aria-pressed='true'] {
+    @apply border-accent/35 bg-accent-soft text-accent;
+  }
+
+  /* ---- Card: density shifts padding and surface, not structure. ---- */
+  .card {
+    @apply min-w-0 border border-border;
+  }
+  .card[data-density='default'] {
+    @apply rounded-soft bg-surface p-4 shadow-card;
+  }
+  .card[data-density='compact'] {
+    @apply rounded-mid bg-surface-2 px-4 py-3;
+  }
+  .card[data-density='featured'] {
+    @apply rounded-soft p-4 shadow-card;
+    border-color: color-mix(in srgb, rgb(var(--c-accent)) 35%, rgb(var(--c-border)));
+    background: linear-gradient(180deg, color-mix(in srgb, rgb(var(--c-accent-soft)) 55%, rgb(var(--c-surface))), rgb(var(--c-surface)));
+  }
+
+  /* ---- Segmented: 32px track, same box as icon/ghost actions. ---- */
+  .segmented {
+    @apply grid h-8 gap-0.5 overflow-hidden rounded-tight border border-border bg-surface-2 p-0.5;
+  }
+  .segmented [role='radio'] {
+    @apply inline-flex h-full min-w-0 items-center justify-center truncate rounded-[6px] px-1.5 font-medium leading-none transition-colors;
+  }
+  .segmented [role='radio'][aria-checked='false'] {
+    @apply text-muted hover:text-fg;
+  }
+  .segmented [role='radio'][aria-checked='true'] {
+    @apply bg-surface text-fg shadow-[0_1px_2px_rgb(28_26_22/0.06)];
+  }
+  .segmented [role='radio'][data-tone='saved'][aria-checked='false'] { color: rgb(var(--c-saved) / 0.72); }
+  .segmented [role='radio'][data-tone='building'][aria-checked='false'] { color: rgb(var(--c-building) / 0.72); }
+  .segmented [role='radio'][data-tone='done'][aria-checked='false'] { color: rgb(var(--c-done) / 0.72); }
+  .segmented [role='radio'][data-tone='saved'][aria-checked='true'] {
+    color: rgb(var(--c-saved));
+    background: color-mix(in srgb, rgb(var(--c-saved)) 14%, rgb(var(--c-surface)));
+    box-shadow: none;
+  }
+  .segmented [role='radio'][data-tone='building'][aria-checked='true'] {
+    color: rgb(var(--c-building));
+    background: color-mix(in srgb, rgb(var(--c-building)) 14%, rgb(var(--c-surface)));
+    box-shadow: none;
+  }
+  .segmented [role='radio'][data-tone='done'][aria-checked='true'] {
+    color: rgb(var(--c-done));
+    background: color-mix(in srgb, rgb(var(--c-done)) 14%, rgb(var(--c-surface)));
+    box-shadow: none;
+  }
+
+  /* ---- Badge: semantic tone only. ---- */
+  .badge {
+    @apply inline-flex items-center rounded-tight border px-2 py-0.5 font-semibold leading-none;
+    font-size: 0.6875rem;
+  }
+  /* Tint is mixed into --surface (not see-through), so a badge reads the same on any card density. */
+  .badge[data-tone='beginner'] { @apply border-beginner/35 text-beginner; background: color-mix(in srgb, rgb(var(--c-beginner)) 10%, rgb(var(--c-surface))); }
+  .badge[data-tone='intermediate'] { @apply border-intermediate/35 text-intermediate; background: color-mix(in srgb, rgb(var(--c-intermediate)) 10%, rgb(var(--c-surface))); }
+  .badge[data-tone='advanced'] { @apply border-advanced/35 text-advanced; background: color-mix(in srgb, rgb(var(--c-advanced)) 10%, rgb(var(--c-surface))); }
+  .badge[data-tone='neutral'] { @apply border-border bg-surface text-muted; }
 }
 
 /* Set for one frame while the theme switches, so colors don't animate through the change. */

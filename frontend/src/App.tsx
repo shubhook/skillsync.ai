@@ -58,13 +58,13 @@ function AppContent() {
 
   return (
     <div className="flex min-h-screen flex-col">
-      <a href="#main" className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[70] focus:rounded-lg focus:bg-accent focus:px-4 focus:py-2 focus:text-accent-ink">
+      <a href="#main" className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[70] focus:rounded-mid focus:bg-accent focus:px-4 focus:py-2 focus:text-accent-ink">
         Skip to content
       </a>
       <Navbar onOpenBookmarks={() => setBookmarksOpen(true)} />
       <BookmarksDrawer open={bookmarksOpen} onClose={() => setBookmarksOpen(false)} />
 
-      <main id="main" className="mx-auto w-full max-w-6xl flex-1 px-4 pb-16 pt-8 sm:px-6 lg:pt-10">
+      <main id="main" className="mx-auto w-full max-w-page flex-1 px-4 pb-16 pt-8 sm:px-6 lg:pt-10">
         <div className="mb-8 max-w-2xl">
           <h1 className="text-3xl font-bold tracking-tight text-fg sm:text-4xl">Find your next project</h1>
           <p className="mt-2 text-muted">
@@ -74,7 +74,7 @@ function AppContent() {
 
         <div className="grid gap-8 lg:grid-cols-[minmax(320px,380px)_1fr] lg:items-start">
           {/* Capped to the viewport so the Generate button stays reachable on short screens. */}
-          <div className="lg:sticky lg:top-20 lg:max-h-[calc(100vh-6rem)] lg:overflow-y-auto lg:rounded-2xl">
+          <div className="lg:sticky lg:top-20 lg:max-h-[calc(100vh-6rem)] lg:overflow-y-auto lg:rounded-soft">
             <BuilderPanel
               techs={techs}
               preferences={preferences}
