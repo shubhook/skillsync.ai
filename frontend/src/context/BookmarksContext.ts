@@ -1,10 +1,14 @@
 import { createContext, useContext } from 'react';
-import type { BookmarkedProject, Project } from '../types';
+import type { BookmarkedProject, BookmarkStatus, Project } from '../types';
 
 export interface BookmarksContextType {
   bookmarks: BookmarkedProject[];
   isBookmarked: (project: Project) => boolean;
-  toggleBookmark: (project: Project) => void;
+  // Returns the bookmark that was removed, if the toggle removed one, so callers can offer undo.
+  toggleBookmark: (project: Project) => BookmarkedProject | null;
+  removeBookmark: (id: string) => void;
+  restoreBookmarks: (bookmarks: BookmarkedProject[]) => void;
+  setStatus: (id: string, status: BookmarkStatus) => void;
   clearAllBookmarks: () => void;
 }
 
