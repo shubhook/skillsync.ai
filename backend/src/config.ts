@@ -7,7 +7,7 @@ import * as path from 'path';
 dotenv.config({ path: path.join(__dirname, '../../.env'), quiet: true });
 
 const LOCAL_ORIGINS = ['http://localhost:3001', 'http://localhost:3002'];
-const DEFAULT_FRONTEND_URL = 'https://skillsync-frontend-five.vercel.app';
+const DEFAULT_FRONTEND_URL = 'https://aiskillsync.vercel.app';
 
 // FRONTEND_URL accepts a comma-separated list so preview deployments can be allowed too.
 const frontendOrigins = (process.env.FRONTEND_URL || DEFAULT_FRONTEND_URL)
