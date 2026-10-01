@@ -168,14 +168,15 @@ export default function StackPicker({ techs, onChange }: StackPickerProps) {
 
       <p id={`${id}-message`} aria-live="polite" className="mt-1 min-h-[1rem] text-xs text-danger">{message}</p>
 
-      {/* Rendered in the flow (not floating) so the sticky side panel never clips it. */}
-      <ul
-        id={listboxId}
-        role="listbox"
-        aria-label="Technologies"
-        hidden={!showList}
-        className="mt-1 max-h-64 overflow-y-auto rounded-mid border border-border bg-surface p-1 shadow-card"
-      >
+      {/* Rendered in the flow (not floating) so the sticky side panel never clips it.
+          The radius lives on a clipping shell so the scrollbar stays inside the corner. */}
+      <div hidden={!showList} className="mt-1 overflow-hidden rounded-mid border border-border bg-surface shadow-card">
+        <ul
+          id={listboxId}
+          role="listbox"
+          aria-label="Technologies"
+          className="max-h-64 overflow-y-auto p-1"
+        >
         {groups.map((group) => (
           <li key={group.category} role="presentation">
             <div className="px-3 pb-1 pt-2 text-[11px] font-semibold uppercase tracking-wide text-muted" aria-hidden="true">
@@ -193,7 +194,8 @@ export default function StackPicker({ techs, onChange }: StackPickerProps) {
             </ul>
           </li>
         )}
-      </ul>
+        </ul>
+      </div>
     </div>
   );
 }
