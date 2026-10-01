@@ -1,27 +1,18 @@
 import React from "react";
-import { useBookmarks, Project } from "../context/BookmarksContext";
+import { useBookmarks } from "../context/BookmarksContext";
+import { isSafeUrl } from "../lib/url";
+import type { Project } from "../types";
 
 interface ProjectCardProps {
   project: Project;
   index: number;
-  onRemove?: () => void;
 }
 
-const ProjectCard: React.FC<ProjectCardProps> = ({ project, index, onRemove }) => {
-  const { addBookmark, removeBookmark, isBookmarked, getBookmarkId } = useBookmarks();
+const ProjectCard: React.FC<ProjectCardProps> = ({ project, index }) => {
+  const { isBookmarked, toggleBookmark } = useBookmarks();
   const bookmarked = isBookmarked(project);
 
-  const handleBookmarkClick = () => {
-    if (bookmarked) {
-      const id = getBookmarkId(project);
-      if (id) {
-        removeBookmark(id);
-        if (onRemove) onRemove();
-      }
-    } else {
-      addBookmark(project);
-    }
-  };
+  const handleBookmarkClick = () => toggleBookmark(project);
 
   return (
     <div className="bg-gray-900 border border-gray-800 rounded-xl p-6 hover:border-gray-700 transition-colors">
@@ -114,7 +105,7 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project, index, onRemove }) =
                 <p className="text-sm text-gray-300 font-medium">{resource.name}</p>
                 <p className="text-xs text-gray-600">{resource.type}</p>
               </div>
-              {resource.url !== "Not available" ? (
+              {isSafeUrl(resource.url) ? (
                 <a
                   href={resource.url}
                   target="_blank"

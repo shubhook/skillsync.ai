@@ -1,38 +1,41 @@
-import * as dotenv from 'dotenv';
-import * as path from 'path';
+import { config } from './config';
 
-dotenv.config({ path: path.join(__dirname, '../../.env') });
-
-import express, { Request, Response } from 'express';
+import express, { NextFunction, Request, Response } from 'express';
 import cors from 'cors';
 import rateLimit from 'express-rate-limit';
-import { apiCall, TechDataset } from './utils/api';
+import { generateProjects, GenerationError } from './gemini';
+import { parseAiRequest } from './schemas';
 
 const app = express();
-const port = process.env.PORT || 3000;
 
-const allowedOrigins: string[] = [
-  'http://localhost:3001',
-  'http://localhost:3002',
-  process.env.FRONTEND_URL || 'https://skillsync-frontend-five.vercel.app'
-];
+// Vercel puts one proxy in front of the app. Trusting it makes req.ip the client's IP,
+// which the rate limiters key on.
+app.set('trust proxy', 1);
+app.disable('x-powered-by');
+
+class HttpError extends Error {
+  constructor(public readonly status: number, message: string) {
+    super(message);
+  }
+}
 
 // CORS configuration
 app.use(cors({
-  origin: function(origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) {
-    if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+  origin(origin, callback) {
+    if (!origin || config.allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
-      callback(new Error('Not allowed by CORS'));
+      callback(new HttpError(403, 'Origin not allowed'));
     }
   },
   methods: ['GET', 'POST'],
-  allowedHeaders: ['Content-Type']
+  allowedHeaders: ['Content-Type'],
 }));
 
-app.use(express.json());
+app.use(express.json({ limit: '10kb' }));
 
 // Rate limiting configuration
+// Note: counters live in memory, so each serverless instance keeps its own.
 // General rate limiter for all routes
 const generalLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
@@ -73,13 +76,9 @@ const aiHourlyLimiter = rateLimit({
 // Apply general rate limiter to all routes
 app.use(generalLimiter);
 
-interface AiRequestBody {
-  dataset: TechDataset;
-}
-
 // Health check endpoint
-app.get('/', async (_req: Request, res: Response) => {
-  res.json({ 
+app.get('/', (_req: Request, res: Response) => {
+  res.json({
     status: 'ok',
     message: 'Welcome to SkillSync API',
     endpoints: {
@@ -92,33 +91,27 @@ app.get('/', async (_req: Request, res: Response) => {
 });
 
 // AI endpoint with strict rate limiting
-app.post('/ai', aiLimiter, aiHourlyLimiter, async (req: Request<object, object, AiRequestBody>, res: Response) => {
-  const dataset = req.body.dataset;
-  
-  // Validate request body
-  if (!dataset) {
-    res.status(400).json({ error: 'Missing dataset in request body' });
+app.post('/ai', aiLimiter, aiHourlyLimiter, async (req: Request, res: Response) => {
+  const parsed = parseAiRequest(req.body);
+  if (!parsed.ok) {
+    res.status(400).json({ error: parsed.error });
     return;
   }
+  const dataset = parsed.value;
 
-  // Check if at least one technology is provided
-  const hasTech = dataset.language || dataset.framework || dataset.database || dataset.others;
-  if (!hasTech) {
-    res.status(400).json({ error: 'Please provide at least one technology' });
-    return;
-  }
-
-  console.log(`[${new Date().toISOString()}] Generating project suggestions...`);
-  console.log('Tech stack:', JSON.stringify(dataset));
+  console.log(`[${new Date().toISOString()}] Generating project suggestions for:`, JSON.stringify(dataset));
 
   try {
-    const response = await apiCall(dataset);
+    const response = await generateProjects(dataset);
     console.log(`[${new Date().toISOString()}] Success - Generated ${response.projects.length} projects`);
     res.json({ response });
-  } 
-  catch (error) {
+  } catch (error) {
     console.error(`[${new Date().toISOString()}] Error:`, error);
-    res.status(500).json({ error: 'Failed to generate project suggestions. Please try again.' });
+    if (error instanceof GenerationError) {
+      res.status(error.status).json({ error: error.message });
+    } else {
+      res.status(500).json({ error: 'Failed to generate project suggestions. Please try again.' });
+    }
   }
 });
 
@@ -127,9 +120,35 @@ app.use((_req: Request, res: Response) => {
   res.status(404).json({ error: 'Endpoint not found' });
 });
 
-if (process.env.NODE_ENV !== 'production') {
-  app.listen(port, () => { 
-    console.log(`Server is running on port ${port}`);
+// Error handler. Covers CORS rejections and body-parser errors (bad JSON, oversized body),
+// which Express would otherwise answer with an HTML page.
+app.use((err: unknown, _req: Request, res: Response, _next: NextFunction) => {
+  if (err instanceof HttpError) {
+    res.status(err.status).json({ error: err.message });
+    return;
+  }
+
+  const status = typeof err === 'object' && err !== null && 'status' in err && typeof err.status === 'number'
+    ? err.status
+    : 500;
+
+  if (status === 413) {
+    res.status(413).json({ error: 'Request body is too large' });
+  } else if (status === 400) {
+    res.status(400).json({ error: 'Request body must be valid JSON' });
+  } else {
+    console.error(`[${new Date().toISOString()}] Unhandled error:`, err);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+if (!config.isProduction) {
+  if (!config.geminiApiKey) {
+    console.error('GEMINI_API_KEY is not set. Add it to the .env file in the repo root.');
+    process.exit(1);
+  }
+  app.listen(config.port, () => {
+    console.log(`Server is running on port ${config.port}`);
     console.log(`Rate limits: AI endpoint - 5/min, 30/hour`);
   });
 }

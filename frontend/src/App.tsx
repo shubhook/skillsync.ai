@@ -4,7 +4,9 @@ import Footer from "./components/Footer";
 import TechSelector from "./components/TechSelector";
 import ProjectCard from "./components/ProjectCard";
 import BookmarksPanel from "./components/BookmarksPanel";
-import { BookmarksProvider, Project } from "./context/BookmarksContext";
+import { BookmarksProvider } from "./context/BookmarksProvider";
+import { generateProjects, GenerateError } from "./lib/api";
+import type { Project } from "./types";
 
 // Type definitions
 type Category = "languages" | "frameworks" | "databases" | "others";
@@ -21,12 +23,6 @@ interface CustomInputs {
   frameworks: string;
   databases: string;
   others: string;
-}
-
-interface ApiResponse {
-  response: {
-    projects: Project[];
-  };
 }
 
 const predefined: Record<Category, string[]> = {
@@ -148,33 +144,10 @@ function AppContent() {
       others: selected.others.join(","),
     };
 
-    const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
-
     try {
-      const res = await fetch(`${API_URL}/ai`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ dataset: payload }),
-      });
-
-      if (!res.ok) {
-        const errorData = await res.json().catch(() => ({}));
-        throw new Error(errorData.error || `HTTP ${res.status}`);
-      }
-
-      const data: ApiResponse = await res.json();
-      const fetchedProjects = data?.response?.projects;
-
-      if (!Array.isArray(fetchedProjects)) throw new Error("Invalid response");
-
-      setProjects(fetchedProjects);
+      setProjects(await generateProjects(payload));
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : "Unknown error";
-      if (errorMessage.includes("Rate limit")) {
-        setError(errorMessage);
-      } else {
-        setError("Unable to generate projects. Please ensure the backend server is running and try again.");
-      }
+      setError(err instanceof GenerateError ? err.message : "Something went wrong. Please try again.");
       console.error(err);
     } finally {
       setLoading(false);
@@ -215,9 +188,9 @@ function AppContent() {
               </button>
             </div>
             <div className="flex flex-wrap gap-2">
-              {allSelected.map((item, idx) => (
+              {categories.flatMap((category) => selected[category].map((item) => (
                 <span
-                  key={idx}
+                  key={`${category}:${item}`}
                   className="group inline-flex items-center gap-2 px-3 py-1.5 bg-gray-800 border border-gray-700 rounded-lg text-sm text-gray-300"
                 >
                   {item}
@@ -231,7 +204,7 @@ function AppContent() {
                     </svg>
                   </button>
                 </span>
-              ))}
+              )))}
             </div>
           </div>
         )}
@@ -307,7 +280,7 @@ function AppContent() {
             </div>
             <div className="space-y-6">
               {projects.map((project, idx) => (
-                <ProjectCard key={idx} project={project} index={idx + 1} />
+                <ProjectCard key={project.title} project={project} index={idx + 1} />
               ))}
             </div>
           </section>

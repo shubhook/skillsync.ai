@@ -91,6 +91,7 @@ const TechSelector: React.FC<TechSelectorProps> = ({
               value={customInput}
               onChange={(e) => onInputChange(e.target.value)}
               onKeyDown={onKeyDown}
+              maxLength={50}
               placeholder="Add custom technology..."
               className="flex-1 px-4 py-3 bg-gray-850 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-gray-500 focus:bg-gray-800 text-sm"
             />
@@ -109,8 +110,8 @@ const TechSelector: React.FC<TechSelectorProps> = ({
               <span className="text-xs text-gray-600">Custom:</span>
               {selectedItems
                 .filter((item) => !predefinedItems.includes(item))
-                .map((item, idx) => (
-                  <span key={idx} className="text-xs text-gray-400 font-mono bg-gray-800 px-2 py-1 rounded">{item}</span>
+                .map((item) => (
+                  <span key={item} className="text-xs text-gray-400 font-mono bg-gray-800 px-2 py-1 rounded">{item}</span>
                 ))}
             </div>
           )}
