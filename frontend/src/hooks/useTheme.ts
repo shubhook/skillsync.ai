@@ -1,59 +1,57 @@
 import { useCallback, useEffect, useState } from 'react';
 
-export type Theme = 'light' | 'dark';
+export type ThemePreference = 'system' | 'light' | 'dark';
 
 const STORAGE_KEY = 'skillsync_theme';
 
-// index.html sets the class before first paint; this reads it back so React agrees.
-function currentTheme(): Theme {
-  return document.documentElement.classList.contains('dark') ? 'dark' : 'light';
+function readPreference(): ThemePreference {
+  try {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    return saved === 'light' || saved === 'dark' ? saved : 'system';
+  } catch {
+    return 'system'; // Storage can be blocked; follow the system setting.
+  }
 }
 
+const systemQuery = () => window.matchMedia('(prefers-color-scheme: dark)');
+
+// Follows the OS appearance by default (HIG dark-mode.md). Light or Dark is an explicit
+// override that the user can undo by choosing System again.
 export function useTheme() {
-  const [theme, setTheme] = useState<Theme>(currentTheme);
+  const [preference, setPreferenceState] = useState<ThemePreference>(readPreference);
+  const [systemDark, setSystemDark] = useState(() => systemQuery().matches);
+  const dark = preference === 'system' ? systemDark : preference === 'dark';
 
   useEffect(() => {
+    const media = systemQuery();
+    const onChange = (e: MediaQueryListEvent) => setSystemDark(e.matches);
+    media.addEventListener('change', onChange);
+    return () => media.removeEventListener('change', onChange);
+  }, []);
+
+  // index.html sets the class before first paint; this keeps it in sync afterwards.
+  useEffect(() => {
     const root = document.documentElement;
-    if (root.classList.contains('dark') === (theme === 'dark')) return;
+    if (root.classList.contains('dark') === dark) return;
     root.classList.add('theme-switching');
-    root.classList.toggle('dark', theme === 'dark');
+    root.classList.toggle('dark', dark);
     // Two frames: one to apply the new colors, one before transitions come back.
     const frame = requestAnimationFrame(() => requestAnimationFrame(() => root.classList.remove('theme-switching')));
     return () => {
       cancelAnimationFrame(frame);
       root.classList.remove('theme-switching');
     };
-  }, [theme]);
+  }, [dark]);
 
-  // Follow the OS setting until the user picks a theme themselves.
-  useEffect(() => {
-    const hasSavedTheme = () => {
-      try {
-        return localStorage.getItem(STORAGE_KEY) !== null;
-      } catch {
-        return false; // Storage can be blocked; fall back to the system setting.
-      }
-    };
-
-    const media = window.matchMedia('(prefers-color-scheme: dark)');
-    const onChange = (e: MediaQueryListEvent) => {
-      if (!hasSavedTheme()) setTheme(e.matches ? 'dark' : 'light');
-    };
-    media.addEventListener('change', onChange);
-    return () => media.removeEventListener('change', onChange);
+  const setPreference = useCallback((next: ThemePreference) => {
+    setPreferenceState(next);
+    try {
+      if (next === 'system') localStorage.removeItem(STORAGE_KEY);
+      else localStorage.setItem(STORAGE_KEY, next);
+    } catch {
+      // Not persisted, but the choice still applies for this visit.
+    }
   }, []);
 
-  const toggleTheme = useCallback(() => {
-    setTheme((prev) => {
-      const next = prev === 'dark' ? 'light' : 'dark';
-      try {
-        localStorage.setItem(STORAGE_KEY, next);
-      } catch {
-        // Not persisted, but the toggle still works for this visit.
-      }
-      return next;
-    });
-  }, []);
-
-  return { theme, toggleTheme };
+  return { preference, dark, setPreference };
 }

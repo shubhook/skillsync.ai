@@ -1,8 +1,9 @@
 /** @type {import('tailwindcss').Config} */
 
-// Colors, radii, and shadow come from CSS variables in src/index.css, so one set of
-// classes works for both themes. See the "50% polymorphism" design system for the rules.
+// Colors, radii, and shadows come from CSS variables in src/index.css, so one set of
+// classes works for both themes.
 const token = (name) => `rgb(var(--c-${name}) / <alpha-value>)`;
+const ease = 'cubic-bezier(0.22, 1, 0.36, 1)';
 
 export default {
   darkMode: 'class',
@@ -18,7 +19,6 @@ export default {
       },
       colors: {
         bg: token('bg'),
-        'bg-deep': token('bg-deep'),
         surface: token('surface'),
         'surface-2': token('surface-2'),
         border: token('border'),
@@ -29,38 +29,41 @@ export default {
         accent: token('accent'),
         'accent-soft': token('accent-soft'),
         'accent-ink': token('accent-ink'),
-        beginner: token('beginner'),
-        intermediate: token('intermediate'),
-        advanced: token('advanced'),
         danger: token('danger'),
-        saved: token('saved'),
         building: token('building'),
         done: token('done'),
       },
-      // The radius ladder. Use these names only (plus rounded-full for dots and spinners).
+      // The radius ladder: controls 8, cards 16, sheets 20 (plus rounded-full for dots and spinners).
       borderRadius: {
         tight: '8px',
         mid: '12px',
-        soft: '18px',
-        shell: '24px',
+        soft: '16px',
+        shell: '20px',
       },
       boxShadow: {
         card: 'var(--shadow)',
+        pop: 'var(--shadow-pop)',
       },
       maxWidth: {
-        page: '1080px',
+        page: '1120px',
+      },
+      transitionTimingFunction: {
+        'out-soft': ease,
       },
       keyframes: {
         shimmer: { from: { backgroundPosition: '200% 0' }, to: { backgroundPosition: '-200% 0' } },
-        'slide-in': { from: { transform: 'translateX(100%)' }, to: { transform: 'translateX(0)' } },
+        'slide-in': { from: { transform: 'translateX(24px)', opacity: '0' }, to: { transform: 'translateX(0)', opacity: '1' } },
         'fade-in': { from: { opacity: '0' }, to: { opacity: '1' } },
-        'toast-in': { from: { opacity: '0', transform: 'translateY(8px)' }, to: { opacity: '1', transform: 'translateY(0)' } },
+        rise: { from: { opacity: '0', transform: 'translateY(8px)' }, to: { opacity: '1', transform: 'translateY(0)' } },
+        'menu-in': { from: { opacity: '0', transform: 'translateY(-4px)' }, to: { opacity: '1', transform: 'translateY(0)' } },
       },
       animation: {
-        shimmer: 'shimmer 1.4s linear infinite',
-        'slide-in': 'slide-in 200ms ease-out',
-        'fade-in': 'fade-in 150ms ease-out',
-        'toast-in': 'toast-in 180ms ease-out',
+        shimmer: 'shimmer 1.6s linear infinite',
+        'slide-in': `slide-in 320ms ${ease}`,
+        'fade-in': `fade-in 200ms ${ease}`,
+        rise: `rise 360ms ${ease} both`,
+        'toast-in': `rise 220ms ${ease}`,
+        'menu-in': `menu-in 160ms ${ease}`,
       },
     },
   },

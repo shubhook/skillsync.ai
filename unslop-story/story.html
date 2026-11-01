@@ -1,0 +1,269 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>SkillSync, unslop story</title>
+<meta name="unslop-steps" content="Spacing, Color and icons, Type and copy, Details">
+<meta name="unslop-frame" content="172 8 1096">
+<style>
+@font-face { font-family: "Instrument Sans"; font-weight: 400; src: url(fonts/instrument-sans-latin-400-normal.woff2) format("woff2"); }
+@font-face { font-family: "Instrument Sans"; font-weight: 500; src: url(fonts/instrument-sans-latin-500-normal.woff2) format("woff2"); }
+@font-face { font-family: "Instrument Sans"; font-weight: 600; src: url(fonts/instrument-sans-latin-600-normal.woff2) format("woff2"); }
+@font-face { font-family: "Instrument Sans"; font-weight: 700; src: url(fonts/instrument-sans-latin-700-normal.woff2) format("woff2"); }
+@font-face { font-family: "JetBrains Mono"; font-weight: 400; src: url(fonts/jetbrains-mono-latin-400-normal.woff2) format("woff2"); }
+
+/* ---------- Step 0: the original screen, values copied from the old index.css and components ---------- */
+:root {
+  --bg: #f7f6f3; --surface: #fffcf8; --surface-2: #f3f0ea; --border: #e4dfd6; --border-strong: #d0c9bc;
+  --fg: #1c1a16; --muted: #5c574e; --faint: #8a8478; --accent: #2f6f5e; --accent-soft: #e4f0eb;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { width: 1440px; min-height: 1000px; background: var(--bg); color: var(--fg); font: 400 16px/1.55 "Instrument Sans", system-ui, sans-serif; -webkit-font-smoothing: antialiased; }
+.wash { position: fixed; inset: 0; pointer-events: none; opacity: 1;
+  background: radial-gradient(1000px 520px at 0% -5%, #e8f2ee 0%, transparent 55%), radial-gradient(800px 420px at 100% 0%, #f3ebe0 0%, transparent 50%); }
+.page { position: relative; }
+.mono { font-family: "JetBrains Mono", ui-monospace, monospace; }
+svg { display: block; flex: none; }
+.ico { width: 12px; height: 12px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+.nav { height: 57px; border-bottom: 1px solid var(--border); background: rgba(255, 252, 248, 0.85); }
+.nav-in { width: 1080px; margin: 0 auto; padding: 0 24px; height: 56px; display: flex; align-items: center; justify-content: space-between; }
+.brand { display: flex; align-items: center; gap: 8px; font-size: 18px; font-weight: 700; letter-spacing: -0.02em; }
+.brand .tile { width: 32px; height: 32px; border-radius: 8px; background: var(--fg); }
+
+main { width: 1080px; margin: 0 auto; padding: 40px 24px 64px; }
+.intro { margin-bottom: 32px; max-width: 672px; }
+h1 { margin: 0; font-size: 36px; line-height: 40px; font-weight: 700; letter-spacing: -0.025em; }
+.lede { margin: 8px 0 0; font-size: 16px; color: var(--muted); }
+
+.grid { display: grid; grid-template-columns: 380px 1fr; gap: 32px; align-items: start; }
+
+.panel { background: var(--surface); border: 1px solid var(--border); border-radius: 18px; padding: 16px; box-shadow: 0 1px 0 rgb(28 26 22 / 0.04), 0 10px 28px -18px rgb(28 26 22 / 0.28); }
+.row { display: flex; justify-content: space-between; align-items: baseline; }
+.label { font-size: 14px; font-weight: 600; }
+.count { font-size: 12px; color: var(--muted); }
+.hint { margin: 4px 0 8px; font-size: 12px; color: var(--muted); line-height: 16px; }
+.field { display: flex; flex-wrap: wrap; align-items: center; gap: 4px; min-height: 44px; padding: 8px; border: 1px solid var(--border-strong); border-radius: 12px; background: var(--surface); }
+.chip { display: inline-flex; align-items: center; gap: 4px; height: 26px; padding: 0 4px 0 8px; border-radius: 8px; border: 1px solid rgb(47 111 94 / 0.25); background: var(--accent-soft); color: var(--accent); font-size: 12px; font-weight: 600; }
+.chip .ico { width: 12px; height: 12px; }
+.ph { padding: 0 4px; font-size: 14px; color: var(--faint); }
+.msg { height: 16px; margin-top: 4px; }
+
+.tune { margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--border); }
+.tune-h { display: flex; align-items: center; gap: 8px; height: 20px; }
+.tune-h .t { font-size: 14px; font-weight: 600; }
+.tune-h .opt { font-size: 14px; color: var(--muted); }
+.tune-h .sum { margin-left: auto; font-size: 13px; color: var(--muted); }
+.chev { width: 16px; height: 16px; color: var(--muted); max-width: 0; opacity: 0; }
+.tune-body { max-height: 420px; overflow: hidden; margin-top: 16px; }
+.seg-l { margin: 0 0 8px; font-size: 12px; font-weight: 500; color: var(--muted); }
+.seg { display: grid; grid-template-columns: repeat(4, 1fr); height: 32px; padding: 2px; gap: 2px; border: 1px solid var(--border); border-radius: 8px; background: var(--surface-2); margin-bottom: 16px; }
+.seg span { display: flex; align-items: center; justify-content: center; border-radius: 6px; font-size: 11px; font-weight: 500; color: var(--muted); }
+.seg .on { background: var(--surface); color: var(--fg); box-shadow: 0 1px 2px rgb(28 26 22 / 0.06); }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.gh { display: inline-flex; align-items: center; gap: 6px; height: 32px; padding: 0 10px; border: 1px solid var(--border); border-radius: 8px; background: var(--surface-2); color: var(--muted); font-size: 13px; font-weight: 600; letter-spacing: -0.01em; white-space: nowrap; overflow: hidden; }
+.gen { margin-top: 16px; display: flex; align-items: center; justify-content: center; gap: 6px; height: 44px; border-radius: 12px; background: var(--accent); color: #f7f6f3; font-size: 13px; font-weight: 600; letter-spacing: -0.01em; }
+.gen .n { font-weight: 400; max-width: 140px; overflow: hidden; white-space: nowrap; }
+.foot-hint { margin-top: 8px; text-align: center; font-size: 12px; color: var(--muted); }
+
+.rh { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+h2 { margin: 0; font-size: 18px; font-weight: 600; }
+.for { margin: 0 0 16px; font-size: 12px; color: var(--muted); }
+.for .ai { color: var(--faint); }
+
+.card { position: relative; overflow: visible; margin-bottom: 16px; padding: 16px; border: 1px solid var(--border); border-radius: 18px; background: var(--surface); box-shadow: 0 1px 0 rgb(28 26 22 / 0.04), 0 10px 28px -18px rgb(28 26 22 / 0.28); }
+.card.feat { border-color: #a9c4b9; }
+.feat-wash { position: absolute; inset: 0; border-radius: inherit; pointer-events: none; opacity: 1; background: linear-gradient(180deg, #edf3ef, var(--surface)); }
+.card > *:not(.feat-wash) { position: relative; }
+.meta { display: flex; align-items: center; gap: 4px; height: 20px; margin-bottom: 0; }
+.meter { display: inline-flex; align-items: flex-end; gap: 2px; max-width: 0; opacity: 0; overflow: hidden; }
+.meter i { width: 3px; border-radius: 1px; background: var(--border-strong); }
+.meter i.f { background: var(--fg); }
+.title-row { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
+h3 { margin: 0; font-size: 18px; line-height: 25px; font-weight: 600; letter-spacing: -0.015em; }
+.save { width: 32px; height: 32px; display: grid; place-items: center; border: 1px solid rgb(47 111 94 / 0.35); border-radius: 8px; background: var(--accent-soft); color: var(--accent); }
+.save .ico { width: 16px; height: 16px; fill: currentColor; }
+.desc { margin: 4px 0 0; font-size: 14px; line-height: 23px; color: var(--muted); }
+.badges { display: flex; flex-wrap: wrap; align-items: center; gap: 4px; margin-top: 12px; }
+.bd { display: inline-flex; align-items: center; height: 19px; padding: 0 8px; border: 1px solid var(--border); border-radius: 8px; background: var(--surface); color: var(--muted); font-size: 11px; font-weight: 600; }
+.bd.lvl1 { color: #1f7a57; border-color: rgb(31 122 87 / 0.35); background: #eaf3ee; }
+.bd.lvl2 { color: #9a5b12; border-color: rgb(154 91 18 / 0.35); background: #f7efe5; }
+.bd .dot { display: none; }
+.stack { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 8px; }
+.stack .bd { font-family: "JetBrains Mono", monospace; font-weight: 400; }
+.cfoot { display: flex; align-items: center; gap: 8px; margin-top: 16px; padding-top: 12px; border-top: 1px solid var(--border); }
+.cfoot .gh { max-width: 160px; }
+.adjust { max-width: 0; padding: 0; border-width: 0; opacity: 0; }
+.link { margin-left: auto; display: inline-flex; align-items: center; gap: 4px; color: var(--accent); font-size: 13px; font-weight: 500; text-decoration: underline; text-underline-offset: 3px; text-decoration-color: currentColor; }
+.link .ico { max-width: 0; opacity: 0; width: 14px; height: 14px; }
+
+/* ---------- Step 1: spacing. One 4px rhythm, padding by density ---------- */
+.s1 main { padding-top: 48px; }
+.s1 .intro { margin-bottom: 32px; }
+.s1 .grid { grid-template-columns: 360px 1fr; gap: 40px; }
+.s1 .panel { padding: 20px; }
+.s1 .hint { margin: 4px 0 12px; line-height: 20px; }
+.s1 .field { padding: 6px; gap: 4px; }
+.s1 .tune { margin-top: 20px; padding-top: 4px; }
+.s1 .tune-h { height: 40px; }
+.s1 .rh { margin-bottom: 4px; }
+.s1 .for { margin-bottom: 16px; }
+.s1 .card { padding: 20px; }
+.s1 .badges { margin-top: 12px; gap: 6px; }
+.s1 .stack { margin-top: 12px; gap: 12px; }
+.s1 .cfoot { margin-top: 16px; padding-top: 0; }
+.s1 .chip { padding: 0 2px 0 8px; height: 28px; }
+
+/* ---------- Step 2: color and icons. Grey ramp, no wash, no gradient card, one accent ---------- */
+.s2 { --bg: #f8f7f5; --surface: #ffffff; --surface-2: #f2f1ee; --border: #e5e3df; --border-strong: #d3d0ca; --fg: #1c1b19; --muted: #58544e; --faint: #726e67; --accent-soft: #e6efeb; }
+.s2 .wash { opacity: 0; }
+.s2 .nav { background: var(--bg); }
+.s2 .feat-wash { opacity: 0; }
+.s2 .card.feat { border-color: var(--border); }
+.s2 .card, .s2 .panel { box-shadow: 0 1px 2px rgb(0 0 0 / 0.04); }
+.s2 .chip { border-color: transparent; background: var(--surface-2); color: var(--fg); }
+.s2 .chip .ico { color: var(--muted); }
+.s2 .ico { stroke-width: 1.5; }
+.s2 .bd.lvl1, .s2 .bd.lvl2 { color: var(--fg); border-color: transparent; background: transparent; }
+.s2 .bd { color: var(--muted); }
+.s2 .save { border-color: transparent; background: transparent; }
+.s2 .gh { background: var(--surface); color: var(--fg); }
+.s2 .gen { color: #ffffff; }
+.s2 .seg { border-color: transparent; }
+.s2 .link { text-decoration-color: transparent; }
+
+/* ---------- Step 3: type and copy. Weights 400 and 500, no negative tracking on small text ---------- */
+.s3 .brand { font-size: 16px; font-weight: 600; letter-spacing: 0; }
+.s3 h1 { font-size: 32px; line-height: 40px; font-weight: 500; letter-spacing: -0.01em; }
+.s3 .lede { font-size: 15px; }
+.s3 .label, .s3 .tune-h .t { font-weight: 500; }
+.s3 .count { font-family: "JetBrains Mono", monospace; color: var(--faint); }
+.s3 .hint { font-size: 13px; }
+.s3 .chip { font-family: "JetBrains Mono", monospace; font-weight: 400; }
+.s3 h2 { font-size: 17px; font-weight: 500; }
+.s3 .for { font-size: 13px; }
+.s3 h3 { font-size: 17px; font-weight: 500; letter-spacing: 0; }
+.s3 .bd { font-size: 13px; font-weight: 400; padding: 0 2px; }
+.s3 .bd.lvl1, .s3 .bd.lvl2 { font-weight: 400; }
+.s3 .stack .bd { font-size: 12px; padding: 0; border-color: transparent; background: transparent; }
+.s3 .gh, .s3 .gen { font-weight: 500; letter-spacing: 0; }
+.s3 .gen { font-size: 14px; }
+.s3 .gen .n { max-width: 0; opacity: 0; }
+.s3 .tune-h .opt { max-width: 0; opacity: 0; }
+.s3 .seg span { font-size: 12px; }
+
+/* ---------- Step 4: details. Radius ladder, the difficulty meter, fewer buttons ---------- */
+.s4 .panel, .s4 .card { border-radius: 16px; }
+.s4 .field { border-radius: 8px; }
+.s4 .chip { border-radius: 6px; }
+.s4 .gen { height: 40px; border-radius: 8px; }
+.s4 .tune-body { max-height: 0; margin-top: 0; }
+.s4 .chev { max-width: 16px; opacity: 1; }
+.s4 .meter { max-width: 16px; opacity: 1; margin-right: 4px; }
+.s4 .bd .dot { display: inline; }
+.s4 .cfoot .out { max-width: 0; padding: 0; border-width: 0; opacity: 0; margin-left: -8px; }
+.s4 .adjust { max-width: 120px; padding: 0 12px; border-width: 1px; opacity: 1; }
+.s4 .cfoot .gh { padding: 0 12px; }
+.s4 .link { text-decoration-color: transparent; }
+.s4 .link .ico { max-width: 14px; opacity: 1; }
+.s4 .save { width: 32px; }
+</style>
+</head>
+<body>
+<div class="wash"></div>
+<div class="page">
+  <header class="nav">
+    <div class="nav-in">
+      <div class="brand"><span class="tile"></span>SkillSync</div>
+    </div>
+  </header>
+
+  <main>
+    <div class="intro" data-gap="main">
+      <h1>Find your next project</h1>
+      <p class="lede"><span class="swap" data-at="3"><span class="from">Pick your stack, tune it if you like, and get three project ideas with a difficulty, a time estimate, and links to get started.</span><span class="to">Three project ideas for the stack you already know, each with a difficulty, a time estimate and links to start.</span></span></p>
+    </div>
+
+    <div class="grid">
+      <aside class="panel" data-radius>
+        <div data-gap="panel">
+          <div class="row"><span class="label">Your stack</span><span class="count">3/20</span></div>
+          <p class="hint"><span class="swap" data-at="3"><span class="from">Search or browse the list. Press Enter to add anything we don't have.</span><span class="to">Search the list, or press Enter to add something that isn't in it</span></span></p>
+        </div>
+        <div class="field" data-gap="panel">
+          <span class="chip">React.js <svg class="ico" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg></span>
+          <span class="chip">Node.js <svg class="ico" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg></span>
+          <span class="chip">PostgreSQL <svg class="ico" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg></span>
+          <span class="ph"><span class="swap" data-at="3"><span class="from">Add more…</span><span class="to">Add more</span></span></span>
+        </div>
+        <div class="tune" data-gap="panel">
+          <div class="tune-h"><span class="t">Tune ideas</span><span class="opt">· optional</span><span class="sum"></span><svg class="ico chev" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg></div>
+          <div class="tune-body">
+            <p class="seg-l">Level</p>
+            <div class="seg"><span class="on">Any</span><span>Beginner</span><span>Intermediate</span><span>Advanced</span></div>
+            <p class="seg-l">Time you have</p>
+            <div class="seg"><span class="on">Any</span><span>Weekend</span><span>2-4 wk</span><span>1-2 mo</span></div>
+            <p class="seg-l">Goal</p>
+            <div class="seg"><span class="on">Any</span><span>Portfolio</span><span>Learning</span><span>Hackathon</span></div>
+            <p class="seg-l">Interested in · up to 3</p>
+            <div class="chips"><span class="gh">Dev tools</span><span class="gh">Health</span><span class="gh">Fintech</span><span class="gh">Education</span><span class="gh">Games</span><span class="gh">Social</span></div>
+          </div>
+        </div>
+        <div class="gen" data-gap="panel">Generate 3 ideas <span class="n">· 3 technologies</span></div>
+      </aside>
+
+      <section>
+        <div class="rh" data-gap="results"><h2>Ideas</h2><span class="gh">Clear history</span></div>
+        <p class="for" data-gap="results">For React.js, Node.js, PostgreSQL<span class="ai" data-in="3"> · Written by Gemini. Check the details before you start.</span></p>
+
+        <article class="card feat" data-gap="results" data-radius>
+          <div class="feat-wash"></div>
+          <div class="title-row">
+            <h3>Shiftboard: rota planner for a small café</h3>
+            <span class="save"><svg class="ico" viewBox="0 0 24 24"><path d="M19 21l-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"/></svg></span>
+          </div>
+          <p class="desc">Staff mark when they can work, the owner drags shifts onto a weekly grid, and everyone gets the final rota by email on Sunday night. Swaps need a manager to approve them.</p>
+          <div class="badges">
+            <span class="meter"><i class="f" style="height:8px"></i><i style="height:10px"></i><i style="height:12px"></i></span>
+            <span class="bd lvl1">Beginner</span><span class="bd"><span class="dot">·&nbsp;</span>1 weekend</span>
+          </div>
+          <div class="stack"><span class="bd">React.js</span><span class="bd">Node.js</span><span class="bd">PostgreSQL</span></div>
+          <div class="cfoot">
+            <span class="gh">Details <svg class="ico" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg></span>
+            <span class="gh adjust"><svg class="ico" viewBox="0 0 24 24"><path d="M20 7h-9M14 17H5"/><circle cx="17" cy="17" r="3"/><circle cx="7" cy="7" r="3"/></svg> Adjust</span>
+            <span class="gh out"><svg class="ico" viewBox="0 0 24 24"><path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9z"/></svg> More like this</span>
+            <span class="gh out"><svg class="ico" viewBox="0 0 24 24"><path d="M12 5v14m0 0-6-6m6 6 6-6"/></svg> Easier</span>
+            <span class="gh out"><svg class="ico" viewBox="0 0 24 24"><path d="M12 19V5m0 0-6 6m6-6 6 6"/></svg> Harder</span>
+            <span class="gh out"><svg class="ico" viewBox="0 0 24 24"><rect x="8" y="8" width="13" height="13" rx="2"/><path d="M4 16V5a2 2 0 0 1 2-2h10"/></svg> README</span>
+            <span class="link">Starter docs <svg class="ico" viewBox="0 0 24 24"><path d="M7 7h10v10M7 17 17 7"/></svg></span>
+          </div>
+        </article>
+
+        <article class="card" data-gap="results">
+          <div class="title-row">
+            <h3>Lease Lens: compare rental listings side by side</h3>
+            <span class="save"><svg class="ico" viewBox="0 0 24 24"><path d="M19 21l-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"/></svg></span>
+          </div>
+          <p class="desc">Paste listing URLs, the server scrapes rent, size and deposit, and you get a table with cost per square metre and commute time to your office.</p>
+          <div class="badges">
+            <span class="meter"><i class="f" style="height:8px"></i><i class="f" style="height:10px"></i><i style="height:12px"></i></span>
+            <span class="bd lvl2">Intermediate</span><span class="bd"><span class="dot">·&nbsp;</span>2-3 weeks</span>
+          </div>
+          <div class="stack"><span class="bd">React.js</span><span class="bd">Node.js</span><span class="bd">PostgreSQL</span><span class="bd">Redis</span></div>
+          <div class="cfoot">
+            <span class="gh">Details <svg class="ico" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg></span>
+            <span class="gh adjust"><svg class="ico" viewBox="0 0 24 24"><path d="M20 7h-9M14 17H5"/><circle cx="17" cy="17" r="3"/><circle cx="7" cy="7" r="3"/></svg> Adjust</span>
+            <span class="gh out"><svg class="ico" viewBox="0 0 24 24"><path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9z"/></svg> More like this</span>
+            <span class="gh out"><svg class="ico" viewBox="0 0 24 24"><path d="M12 5v14m0 0-6-6m6 6 6-6"/></svg> Easier</span>
+            <span class="gh out"><svg class="ico" viewBox="0 0 24 24"><path d="M12 19V5m0 0-6 6m6-6 6 6"/></svg> Harder</span>
+            <span class="gh out"><svg class="ico" viewBox="0 0 24 24"><rect x="8" y="8" width="13" height="13" rx="2"/><path d="M4 16V5a2 2 0 0 1 2-2h10"/></svg> README</span>
+            <span class="link">Starter docs <svg class="ico" viewBox="0 0 24 24"><path d="M7 7h10v10M7 17 17 7"/></svg></span>
+          </div>
+        </article>
+      </section>
+    </div>
+  </main>
+</div>
+</body>
+</html>

@@ -21,8 +21,8 @@ export default class ErrorBoundary extends Component<ErrorBoundaryProps, { faile
   render() {
     if (!this.state.failed) return this.props.children;
     return (
-      <div role="alert" className="rounded-soft border border-danger/35 bg-danger/10 p-6 text-sm">
-        <p className="font-semibold text-fg">Something went wrong showing these ideas.</p>
+      <div role="alert" className="rounded-soft border border-danger/30 bg-danger/5 p-5 text-sm">
+        <p className="font-medium text-fg">Something went wrong showing these ideas</p>
         <p className="mt-1 text-muted">Your bookmarks are safe. Clearing the results usually fixes it.</p>
         <Action
           variant="solid"

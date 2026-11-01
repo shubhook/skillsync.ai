@@ -1,5 +1,5 @@
-import type { BadgeTone } from '../components/ui/Badge';
 import type { Difficulty } from '../types';
 
-export const difficultyTone = (difficulty: Difficulty): BadgeTone =>
-  difficulty === 'Beginner' ? 'beginner' : difficulty === 'Advanced' ? 'advanced' : 'intermediate';
+// 1 to 3, used by the difficulty meter.
+export const difficultyLevel = (difficulty: Difficulty): 1 | 2 | 3 =>
+  difficulty === 'Beginner' ? 1 : difficulty === 'Advanced' ? 3 : 2;

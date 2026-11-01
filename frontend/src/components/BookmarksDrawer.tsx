@@ -78,33 +78,33 @@ export default function BookmarksDrawer({ open, onClose }: BookmarksDrawerProps)
     toast({ message: 'Downloaded skillsync-projects.md' });
   };
 
-  const filters: { value: BookmarkStatus | 'all'; label: string; tone?: BookmarkStatus }[] = [
-    { value: 'all', label: `All ${bookmarks.length}` },
-    ...STATUS_OPTIONS.map((o) => ({ value: o.value, label: `${o.label} ${count(o.value)}`, tone: o.tone })),
+  const filters: { value: BookmarkStatus | 'all'; label: string; tone?: BookmarkStatus; count: number }[] = [
+    { value: 'all', label: 'All', count: bookmarks.length },
+    ...STATUS_OPTIONS.map((o) => ({ value: o.value, label: o.label, tone: o.tone, count: count(o.value) })),
   ];
 
   return (
     <div className="fixed inset-0 z-50" onKeyDown={onKeyDown}>
-      <div className="absolute inset-0 bg-black/50 backdrop-blur-sm animate-fade-in" onClick={onClose} aria-hidden="true" />
+      <div className="absolute inset-0 bg-black/40 animate-fade-in" onClick={onClose} aria-hidden="true" />
       <div
         ref={panelRef}
         role="dialog"
         aria-modal="true"
         aria-labelledby="bookmarks-title"
-        className="absolute inset-y-0 right-0 flex w-full max-w-xl flex-col border-l border-border bg-bg shadow-card animate-slide-in"
+        className="absolute inset-y-0 right-0 flex w-full max-w-xl flex-col border-l border-border bg-bg shadow-pop animate-slide-in"
       >
-        <div className="flex items-start justify-between gap-4 border-b border-border px-6 py-4">
+        <div className="flex items-center justify-between gap-4 px-5 pb-3 pt-4">
           <div>
-            <h2 id="bookmarks-title" className="text-lg font-semibold text-fg">Bookmarks</h2>
-            <p className="text-sm text-muted">
-              {bookmarks.length} {bookmarks.length === 1 ? 'project' : 'projects'} saved
+            <h2 id="bookmarks-title" className="text-[17px] font-medium text-fg">Bookmarks</h2>
+            <p className="text-[13px] text-muted">
+              {bookmarks.length} {bookmarks.length === 1 ? 'project' : 'projects'}
             </p>
           </div>
           <div className="flex items-center gap-2">
             {bookmarks.length > 0 && (
               <>
                 <Action variant="ghost" onClick={exportMarkdown}>
-                  <DownloadIcon className="h-3 w-3" /> Export
+                  <DownloadIcon className="h-4 w-4 text-muted" /> Export
                 </Action>
                 <Action variant="ghost" onClick={clearAll}>Clear all</Action>
               </>
@@ -116,11 +116,10 @@ export default function BookmarksDrawer({ open, onClose }: BookmarksDrawerProps)
         </div>
 
         {bookmarks.length > 0 && (
-          <div className="border-b border-border px-6 py-3">
+          <div className="border-b border-border px-5 pb-4">
             <Segmented
               label="Filter by status"
               hideLabel
-              size="sm"
               includeAny={false}
               options={filters}
               value={filter}
@@ -129,17 +128,17 @@ export default function BookmarksDrawer({ open, onClose }: BookmarksDrawerProps)
           </div>
         )}
 
-        <div className="flex-1 overflow-y-auto p-6">
+        <div className="flex-1 overflow-y-auto p-5">
           {bookmarks.length === 0 ? (
             <div className="flex h-full flex-col items-center justify-center text-center">
-              <BookmarkIcon className="mb-4 h-12 w-12 text-border-strong" />
-              <h3 className="mb-1 font-semibold text-fg">No bookmarks yet</h3>
-              <p className="max-w-xs text-sm text-muted">Save ideas you like and track them here as you build.</p>
+              <BookmarkIcon className="mb-3 h-6 w-6 text-faint" />
+              <h3 className="text-[15px] font-medium text-fg">No bookmarks yet</h3>
+              <p className="mt-1 max-w-xs text-[13px] text-muted">Save an idea with the bookmark button, then mark it Building or Done as you go.</p>
             </div>
           ) : visible.length === 0 ? (
             <p className="py-12 text-center text-sm text-muted">Nothing marked as {STATUS_OPTIONS.find((o) => o.value === filter)?.label.toLowerCase()} yet.</p>
           ) : (
-            <div className="space-y-4">
+            <div className="space-y-3">
               {visible.map((bookmark) => (
                 <ProjectCard
                   key={bookmark.id}

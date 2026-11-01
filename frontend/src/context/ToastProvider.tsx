@@ -44,8 +44,8 @@ export function ToastProvider({ children }: { children: ReactNode }) {
         {toasts.map((t) => (
           <div
             key={t.id}
-            className={`pointer-events-auto flex w-full max-w-sm items-center gap-3 rounded-mid border px-4 py-3 text-sm shadow-card animate-toast-in ${
-              t.tone === 'error' ? 'border-danger/40 bg-surface text-danger' : 'border-border-strong bg-surface text-fg'
+            className={`pointer-events-auto flex w-full max-w-sm items-center gap-2 rounded-mid border bg-surface py-2 pl-4 pr-2 text-[13px] shadow-pop animate-toast-in ${
+              t.tone === 'error' ? 'border-danger/40 text-danger' : 'border-border text-fg'
             }`}
           >
             <span className="flex-1">{t.message}</span>
