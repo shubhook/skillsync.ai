@@ -103,7 +103,7 @@ export default function StackPicker({ techs, onChange }: StackPickerProps) {
           choose(option);
         }}
         onMouseMove={() => setActiveIndex(i)}
-        className={`cursor-pointer rounded-tight px-3 py-2 text-sm ${i === active ? 'bg-accent-soft text-fg' : 'text-muted'}`}
+        className={`flex h-8 cursor-pointer items-center rounded-[6px] px-2 text-sm ${i === active ? 'bg-surface-2 text-fg' : 'text-muted'}`}
       >
         {label}
       </li>
@@ -112,20 +112,20 @@ export default function StackPicker({ techs, onChange }: StackPickerProps) {
 
   return (
     <div>
-      <div className="mb-1 flex items-baseline justify-between gap-2">
-        <label htmlFor={`${id}-input`} className="text-sm font-semibold text-fg">Your stack</label>
-        <span className="text-xs text-muted">{techs.length}/{MAX_TECHS}</span>
+      <div className="flex items-baseline justify-between gap-2">
+        <label htmlFor={`${id}-input`} className="text-sm font-medium text-fg">Your stack</label>
+        <span className="font-mono text-xs tabular-nums text-faint">{techs.length}/{MAX_TECHS}</span>
       </div>
-      <p id={`${id}-hint`} className="mb-2 text-xs text-muted">
-        Search or browse the list. Press Enter to add anything we don't have.
+      <p id={`${id}-hint`} className="mb-3 mt-1 text-[13px] text-muted">
+        Search the list, or press Enter to add something that isn't in it
       </p>
 
       <div
         onClick={() => inputRef.current?.focus()}
-        className="flex min-h-[44px] cursor-text flex-wrap items-center gap-1 rounded-mid border border-border-strong bg-surface p-2 focus-within:border-accent"
+        className="flex min-h-11 cursor-text flex-wrap items-center gap-1 rounded-tight border border-border-strong bg-surface p-1.5 transition-colors focus-within:border-accent"
       >
         {techs.map((tech) => (
-          <span key={tech.name} className="inline-flex items-center gap-1 rounded-tight border border-accent/25 bg-accent-soft py-1 pl-2 pr-1 text-xs font-semibold text-accent">
+          <span key={tech.name} className="inline-flex h-7 items-center gap-0.5 rounded-[6px] bg-surface-2 pl-2 pr-0.5 font-mono text-xs text-fg">
             {tech.name}
             <button
               type="button"
@@ -134,7 +134,7 @@ export default function StackPicker({ techs, onChange }: StackPickerProps) {
                 remove(tech.name);
               }}
               aria-label={`Remove ${tech.name}`}
-              className="rounded-tight p-0.5 text-accent hover:bg-accent/15"
+              className="grid h-6 w-6 place-items-center rounded-[4px] text-muted transition-colors hover:bg-border hover:text-fg"
             >
               <CloseIcon className="h-3 w-3" />
             </button>
@@ -153,7 +153,7 @@ export default function StackPicker({ techs, onChange }: StackPickerProps) {
           autoComplete="off"
           maxLength={MAX_TECH_LENGTH}
           value={query}
-          placeholder={techs.length ? 'Add more…' : 'e.g. React, Python, Postgres'}
+          placeholder={techs.length ? 'Add more' : 'React, Python, Postgres'}
           onChange={(e) => {
             setQuery(e.target.value);
             setOpen(true);
@@ -162,15 +162,15 @@ export default function StackPicker({ techs, onChange }: StackPickerProps) {
           onFocus={() => setOpen(true)}
           onBlur={() => setOpen(false)}
           onKeyDown={onKeyDown}
-          className="min-w-[8rem] flex-1 bg-transparent px-1 py-1 text-sm text-fg placeholder:text-faint focus:outline-none"
+          className="h-7 min-w-32 flex-1 bg-transparent px-1.5 text-sm text-fg placeholder:text-faint focus:outline-none"
         />
       </div>
 
-      <p id={`${id}-message`} aria-live="polite" className="mt-1 min-h-[1rem] text-xs text-danger">{message}</p>
+      <p id={`${id}-message`} aria-live="polite" className="mt-1 min-h-4 text-xs text-danger">{message}</p>
 
       {/* Rendered in the flow (not floating) so the sticky side panel never clips it.
           The radius lives on a clipping shell so the scrollbar stays inside the corner. */}
-      <div hidden={!showList} className="mt-1 overflow-hidden rounded-mid border border-border bg-surface shadow-card">
+      <div hidden={!showList} className="mt-1 overflow-hidden rounded-mid border border-border bg-surface shadow-pop">
         <ul
           id={listboxId}
           role="listbox"
@@ -179,7 +179,7 @@ export default function StackPicker({ techs, onChange }: StackPickerProps) {
         >
         {groups.map((group) => (
           <li key={group.category} role="presentation">
-            <div className="px-3 pb-1 pt-2 text-[11px] font-semibold uppercase tracking-wide text-muted" aria-hidden="true">
+            <div className="px-2 pb-1 pt-2 text-xs text-faint" aria-hidden="true">
               {CATEGORY_LABELS[group.category]}
             </div>
             <ul role="group" aria-label={CATEGORY_LABELS[group.category]}>

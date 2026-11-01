@@ -1,36 +1,44 @@
-// Small inline icons (24x24 grid, stroke-based unless noted). Decorative by default.
+// Small inline icons in the lucide style: 24x24 grid, 1.5 stroke. Decorative by default.
 type IconProps = { className?: string };
 
 function Stroke({ className = 'h-4 w-4', d }: IconProps & { d: string | string[] }) {
   return (
-    <svg className={className} fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24" aria-hidden="true">
+    <svg className={className} fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24" aria-hidden="true">
       {(Array.isArray(d) ? d : [d]).map((path) => <path key={path} d={path} />)}
     </svg>
   );
 }
 
 export const BookmarkIcon = ({ className, filled }: IconProps & { filled?: boolean }) => (
-  <svg className={className ?? 'h-4 w-4'} fill={filled ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth={2} strokeLinejoin="round" viewBox="0 0 24 24" aria-hidden="true">
-    <path d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
+  <svg className={className ?? 'h-4 w-4'} fill={filled ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth={1.5} strokeLinejoin="round" viewBox="0 0 24 24" aria-hidden="true">
+    <path d="M19 21l-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z" />
   </svg>
 );
-export const CloseIcon = (p: IconProps) => <Stroke {...p} d="M6 18L18 6M6 6l12 12" />;
-export const CheckIcon = (p: IconProps) => <Stroke {...p} d="M5 13l4 4L19 7" />;
-export const ClockIcon = (p: IconProps) => <Stroke {...p} d={['M12 8v4l3 3', 'M21 12a9 9 0 11-18 0 9 9 0 0118 0z']} />;
-export const ChevronDownIcon = (p: IconProps) => <Stroke {...p} d="M19 9l-7 7-7-7" />;
+export const CloseIcon = (p: IconProps) => <Stroke {...p} d={['M18 6 6 18', 'm6 6 12 12']} />;
+export const CheckIcon = (p: IconProps) => <Stroke {...p} d="M20 6 9 17l-5-5" />;
+export const ChevronDownIcon = (p: IconProps) => <Stroke {...p} d="m6 9 6 6 6-6" />;
 export const SunIcon = (p: IconProps) => (
-  <Stroke {...p} d={['M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707', 'M16 12a4 4 0 11-8 0 4 4 0 018 0z']} />
+  <Stroke {...p} d={['M12 16a4 4 0 1 0 0-8 4 4 0 0 0 0 8z', 'M12 2v2', 'M12 20v2', 'm4.93 4.93 1.41 1.41', 'm17.66 17.66 1.41 1.41', 'M2 12h2', 'M20 12h2', 'm6.34 17.66-1.41 1.41', 'm19.07 4.93-1.41 1.41']} />
 );
-export const MoonIcon = (p: IconProps) => <Stroke {...p} d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />;
-export const CopyIcon = (p: IconProps) => <Stroke {...p} d={['M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2', 'M10 8h8a2 2 0 012 2v8a2 2 0 01-2 2h-8a2 2 0 01-2-2v-8a2 2 0 012-2z']} />;
-export const SparkIcon = (p: IconProps) => <Stroke {...p} d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9z" />;
-export const ArrowDownIcon = (p: IconProps) => <Stroke {...p} d="M12 5v14m0 0l-6-6m6 6l6-6" />;
-export const ArrowUpIcon = (p: IconProps) => <Stroke {...p} d="M12 19V5m0 0l-6 6m6-6l6 6" />;
-export const ExternalLinkIcon = (p: IconProps) => <Stroke {...p} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />;
-export const DownloadIcon = (p: IconProps) => <Stroke {...p} d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M12 4v12m0 0l-4-4m4 4l4-4" />;
-export const TrashIcon = (p: IconProps) => <Stroke {...p} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6M4 7h16M10 3h4a1 1 0 011 1v3H9V4a1 1 0 011-1z" />;
-export const AlertIcon = (p: IconProps) => <Stroke {...p} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />;
-export const RefreshIcon = (p: IconProps) => <Stroke {...p} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />;
+export const MoonIcon = (p: IconProps) => <Stroke {...p} d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9z" />;
+export const MonitorIcon = (p: IconProps) => <Stroke {...p} d={['M4 3h16a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z', 'M8 21h8', 'M12 17v4']} />;
+export const CopyIcon = (p: IconProps) => <Stroke {...p} d={['M10 8h10a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H10a2 2 0 0 1-2-2V10a2 2 0 0 1 2-2z', 'M4 16a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2']} />;
+export const LayersIcon = (p: IconProps) => (
+  <Stroke {...p} d={['m12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83Z', 'm22 17.65-9.17 4.16a2 2 0 0 1-1.66 0L2 17.65', 'm22 12.65-9.17 4.16a2 2 0 0 1-1.66 0L2 12.65']} />
+);
+export const SlidersIcon = (p: IconProps) => (
+  <Stroke {...p} d={['M20 7h-9', 'M14 17H5', 'M17 20a3 3 0 1 0 0-6 3 3 0 0 0 0 6z', 'M7 10a3 3 0 1 0 0-6 3 3 0 0 0 0 6z']} />
+);
+export const CornerDownRightIcon = (p: IconProps) => <Stroke {...p} d={['m15 10 5 5-5 5', 'M4 4v7a4 4 0 0 0 4 4h12']} />;
+export const ArrowDownIcon = (p: IconProps) => <Stroke {...p} d={['M12 5v14', 'm19 12-7 7-7-7']} />;
+export const ArrowUpIcon = (p: IconProps) => <Stroke {...p} d={['m5 12 7-7 7 7', 'M12 19V5']} />;
+export const ArrowUpRightIcon = (p: IconProps) => <Stroke {...p} d={['M7 7h10v10', 'M7 17 17 7']} />;
+export const DownloadIcon = (p: IconProps) => <Stroke {...p} d={['M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4', 'm7 10 5 5 5-5', 'M12 15V3']} />;
+export const TrashIcon = (p: IconProps) => <Stroke {...p} d={['M3 6h18', 'M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6', 'M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2']} />;
+export const AlertIcon = (p: IconProps) => <Stroke {...p} d={['M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20z', 'M12 8v4', 'M12 16h.01']} />;
+export const RefreshIcon = (p: IconProps) => (
+  <Stroke {...p} d={['M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8', 'M21 3v5h-5', 'M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16', 'M8 16H3v5']} />
+);
 
 export const GithubIcon = ({ className = 'h-4 w-4' }: IconProps) => (
   <svg className={className} fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">

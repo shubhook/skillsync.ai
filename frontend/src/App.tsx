@@ -58,21 +58,21 @@ function AppContent() {
 
   return (
     <div className="flex min-h-screen flex-col">
-      <a href="#main" className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[70] focus:rounded-mid focus:bg-accent focus:px-4 focus:py-2 focus:text-accent-ink">
+      <a href="#main" className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[70] focus:rounded-tight focus:bg-accent focus:px-4 focus:py-2 focus:text-accent-ink">
         Skip to content
       </a>
       <Navbar onOpenBookmarks={() => setBookmarksOpen(true)} />
       <BookmarksDrawer open={bookmarksOpen} onClose={() => setBookmarksOpen(false)} />
 
-      <main id="main" className="mx-auto w-full max-w-page flex-1 px-4 pb-16 pt-8 sm:px-6 lg:pt-10">
-        <div className="mb-8 max-w-2xl">
-          <h1 className="text-3xl font-bold tracking-tight text-fg sm:text-4xl">Find your next project</h1>
-          <p className="mt-2 text-muted">
-            Pick your stack, tune it if you like, and get three project ideas with a difficulty, a time estimate, and links to get started.
+      <main id="main" className="mx-auto w-full max-w-page flex-1 px-4 pb-16 pt-6 sm:px-6 lg:pt-12">
+        <div className="mb-6 max-w-xl animate-rise lg:mb-8">
+          <h1 className="text-[28px] font-medium leading-tight tracking-[-0.01em] text-fg sm:text-[32px]">Find your next project</h1>
+          <p className="mt-2 text-[15px] text-muted">
+            Three project ideas for the stack you already know, each with a difficulty, a time estimate and links to start.
           </p>
         </div>
 
-        <div className="grid gap-8 lg:grid-cols-[minmax(320px,380px)_1fr] lg:items-start">
+        <div className="grid gap-8 lg:grid-cols-[360px_minmax(0,1fr)] lg:items-start lg:gap-10">
           {/* Capped to the viewport so the Generate button stays reachable on short screens. */}
           <div className="lg:sticky lg:top-20 lg:max-h-[calc(100vh-6rem)] lg:overflow-y-auto lg:rounded-soft">
             <BuilderPanel
